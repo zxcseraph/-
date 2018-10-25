@@ -1,0 +1,39 @@
+#!/usr/bin/expect
+
+set REMOTE_PLACE "currentdata"
+set LOCAL_Cell_DATAPATH "../data"
+set IP "10.228.246.119"
+set SFTPUSER "ftp_wypt"
+set PASSWD "ftp_wypt"
+set PORT "22"
+set G2_G2 "GSM_A-adjacent.unl"
+set TD_G2 "GSM_RELA-gsmrelation.unl"
+set G2_TD "TD_A-adjacent_td.unl"
+set TD_TD "TD_RELA-utranrelation.unl"
+set LBS_LATLT "GSM_2*unl"
+set TD_LATLT "TD_2*unl"
+
+set timeout -1
+spawn /usr/bin/sftp -oPort=$PORT $SFTPUSER@$IP 
+expect "password:"
+send "$PASSWD\r"
+expect "sftp>"
+send "cd $REMOTE_PLACE\r"
+expect "sftp>"
+send "lcd $LOCAL_Cell_DATAPATH\r"
+expect "sftp>"
+send "mget $G2_G2\r"
+expect "sftp>"
+send "mget $TD_G2\r"
+expect "sftp>"
+send "mget $G2_TD\r"
+expect "sftp>"
+send "mget $TD_TD\r"
+expect "sftp>"
+send "mget $LBS_LATLT\r"
+expect "sftp>"
+send "mget $TD_LATLT\r"
+expect "sftp>"
+send "quit\r"
+expect EOF
+

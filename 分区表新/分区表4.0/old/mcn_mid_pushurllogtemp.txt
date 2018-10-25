@@ -1,0 +1,26 @@
+create table "ismp".mcn_mid_pushurllogtemp 
+  (
+    streamnumber serial not null ,
+    midgroupid char(10),
+    bindid char(30),
+    callid char(30),
+    url varchar(200),
+    pushtime char(14),
+    result char(1),
+    cityid integer,
+    sourcetype char(1) 
+        default '0',
+    finishtime char(14)
+  )   
+  fragment by expression 
+    partition p2018030100 ((pushtime >= '20180301000000' 
+              ) AND (pushtime < '20180310000000' ) ) in userdbs, 			  
+    partition p2018031000 ((pushtime >= '20180310000000' 
+              ) AND (pushtime < '20180320000000' ) ) in userdbs,
+    partition rmd remainder in userdbs
+    extent size 64000 next size 64000 lock mode page;
+
+create index "ismp".idx1_pushurllog_streamnumberft on "ismp"
+    .mcn_mid_pushurllogtemp (streamnumber) using btree ;
+create index "ismp".idx_pushurllog_callidft on "ismp".mcn_mid_pushurllogtemp 
+    (callid) using btree;

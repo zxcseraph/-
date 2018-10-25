@@ -1,0 +1,16 @@
+#!/bin/sh
+IIPDBNAME=close@dbserver1
+LOCALPATH=$HOME/closecell
+LOCAL_Cell_TEMPPATH=$LOCALPATH/tmp
+LOGNE=$LOCALPATH/log/dbcell.log
+
+while read LINE
+do
+if [ -f $LOCAL_Cell_TEMPPATH/load.sql ];then
+   rm $LOCAL_Cell_TEMPPATH/load.sql
+fi
+>$LOCAL_Cell_TEMPPATH/load.sql
+echo "load from $LINE insert into small_c2cell_closecell" >> $LOCAL_Cell_TEMPPATH/load.sql
+dbaccess $IIPDBNAME $LOCAL_Cell_TEMPPATH/load.sql 1>>$LOGNE 2>&1 
+done
+

@@ -1,0 +1,66 @@
+create table mcn_mid_callbilllog(
+streamnumber serial not null,
+	midgroupid char(20) not null,
+	bindId char(28) not null,
+	callId char(30) not null,
+	callNo char(20) not null,
+	peerNo char(20) not null,
+	x char(20) not null,
+	callTime char(14) not null,
+	startTime char(14) not null,
+	finishTime char(14) not null,
+	callDuration int not null,
+	finishType char(1) not null,
+	finishState char(2) not null,
+	result char(1),
+	resultDesc varchar(128),
+	pushTime char(14),
+	successTime char(14),
+	groupid varchar(32),
+	orderid varchar(32),
+	exptime char(20),
+	Y char(20),
+	subId char(28)
+)
+  fragment by expression 
+    partition p2018090100 ((pushTime >= '20180901000000' 
+              ) AND (pushTime < '20180902000000' ) ) in userdbs, 			  
+    partition rmd remainder in userdbs
+    extent size 64000 next size 64000 lock mode row;
+Create index idx_mid_callbilllog_midgroupid     on mcn_mid_callbilllog(midgroupid);
+Create index idx_mid_callbilllog_successTime    on mcn_mid_callbilllog(successTime );
+Create index idx_mid_callbilllog_pushTime       on mcn_mid_callbilllog(pushTime );
+Create index idx_mid_callbilllog_callid         on mcn_mid_callbilllog(callid); 
+Create index idx_mid_callbilllog_streamnumber   on mcn_mid_callbilllog(streamnumber);
+
+
+create table mcn_mid_smsbilllog(
+streamnumber serial not null,
+midgroupid char(20) not null,
+bindId char(28),
+callId char(30) not null,
+callNo char(20) not null,
+peerNo char(20),
+x char(20),
+smsTime char(14) not null,
+smsResult char(1) not null,
+result char(1),
+resultdesc varchar(128),
+pushTime char(14),
+successTime char(14),
+groupid varchar(32),
+orderid varchar(32),
+exptime char(20),
+y char(20),
+subId char(28)
+)
+  fragment by expression 
+    partition p2018090100 ((pushTime >= '20180901000000' 
+              ) AND (pushTime < '20180902000000' ) ) in userdbs, 			  
+    partition rmd remainder in userdbs
+    extent size 64000 next size 64000 lock mode row;
+Create index idx_mid_smsbilllog_midgroupid      on mcn_mid_smsbilllog(midgroupid);
+Create index idx_mid_smsbilllog_successTime     on mcn_mid_smsbilllog(successTime );
+Create index idx_mid_smsbilllog_pushTime        on mcn_mid_smsbilllog(pushTime );
+Create index idx_mid_smsbilllog_callId          on mcn_mid_smsbilllog(callId );
+Create index idx_mid_smsbilllog_streamnumber    on mcn_mid_smsbilllog(streamnumber);

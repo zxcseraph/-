@@ -1,0 +1,32 @@
+mytest_read_psync_1024k_86.test: (g=0): rw=read, bs=(R) 1024KiB-1024KiB, (W) 1024KiB-1024KiB, (T) 1024KiB-1024KiB, ioengine=psync, iodepth=1
+...
+fio-2.99
+Starting 86 threads
+
+mytest_read_psync_1024k_86.test: (groupid=0, jobs=86): err= 0: pid=16203: Wed Aug  1 11:22:49 2018
+   read: IOPS=770, BW=770MiB/s (808MB/s)(22.7GiB/30164msec)
+    clat (usec): min=315, max=1302.3k, avg=111278.48, stdev=127907.35
+     lat (usec): min=315, max=1302.3k, avg=111278.73, stdev=127907.34
+    clat percentiles (usec):
+     |  1.00th=[    404],  5.00th=[    515], 10.00th=[   2769],
+     | 20.00th=[  14222], 30.00th=[  24773], 40.00th=[  47449],
+     | 50.00th=[  86508], 60.00th=[ 117965], 70.00th=[ 149947],
+     | 80.00th=[ 185598], 90.00th=[ 238027], 95.00th=[ 295699],
+     | 99.00th=[ 624952], 99.50th=[ 851444], 99.90th=[1199571],
+     | 99.95th=[1216349], 99.99th=[1266680]
+   bw (  KiB/s): min= 2048, max=55518, per=1.22%, avg=9593.05, stdev=6966.50, samples=4969
+   iops        : min=    2, max=   54, avg= 9.32, stdev= 6.77, samples=4969
+    lat (usec) : 500=4.70%, 750=2.53%, 1000=0.61%
+    lat (msec) : 2=1.27%, 4=1.93%, 10=5.05%, 20=9.57%, 50=15.06%
+    lat (msec) : 100=13.55%, 250=37.29%, 500=6.95%, 750=0.79%, 1000=0.29%
+    lat (msec) : 2000=0.40%
+  cpu          : usr=0.00%, sys=0.23%, ctx=38122, majf=0, minf=1888
+  IO depths    : 1=100.0%, 2=0.0%, 4=0.0%, 8=0.0%, 16=0.0%, 32=0.0%, >=64=0.0%
+     submit    : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.0%, 64=0.0%, >=64=0.0%
+     complete  : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.0%, 64=0.0%, >=64=0.0%
+     issued rwt: total=23240,0,0, short=0,0,0, dropped=0,0,0
+     latency   : target=0, window=0, percentile=100.00%, depth=1
+
+Run status group 0 (all jobs):
+   READ: bw=770MiB/s (808MB/s), 770MiB/s-770MiB/s (808MB/s-808MB/s), io=22.7GiB (24.4GB), run=30164-30164msec
+[root@eb69204 run30]# cat read_psync_1024k_final

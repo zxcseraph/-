@@ -1,0 +1,212 @@
+#
+#  Copyright(C) 2000 EASTCOM-BUPT Inc.
+#
+#  Filename            : $RCSfile: closecell_db_automatic,v $
+#  Last Revision       : $Revision: 1.1 $
+#  Last Revision Date  : $Date: 2012/07/19 08:35:59 $
+#  Description         :
+#
+#!/bin/sh
+#closecell_db是数据入库的脚本
+IIPDBNAME=newmin@scp61
+LOCALPATH=$HOME/closecell
+LOCAL_Cell_TEMPPATH=$LOCALPATH/tmp
+LOCAL_Cell_DATAPATH=$LOCALPATH/data
+LOCAL_Cell_DBPATH=$LOCALPATH/db
+LOCAL_Cell_BINPATH=$LOCALPATH/bin
+LOCAL_Cell_BACKUPPATH=$LOCALPATH/backup
+LOGNE=$LOCALPATH/log/dbcell.log
+FILE=$LOCAL_Cell_TEMPPATH/$1
+TABLENAME=$1
+TMPTABLENAME=tmp_$1
+TMPTABLESQL=first_create_tmp_$1.sql
+TABLENAMEBAK=$1_bak
+TMPTABLENAMEBAK=$2_bak
+DATE=`date +"%Y%m%d"`
+
+
+renametable()
+{
+    echo "start to rename table\n"
+    echo "start to rename table\n" >> $LOGNE
+   
+    if [ -f $LOCAL_Cell_TEMPPATH/renamecell.sql ]; then
+       rm $LOCAL_Cell_TEMPPATH/renamecell.sql
+    fi
+    echo "rename table $TABLENAME to $TABLENAMEBAK;" > $LOCAL_Cell_TEMPPATH/renamecell.sql 
+   
+    i=1 
+    while [ "$i" -le 5 ]; 
+    do 
+       dbaccess $IIPDBNAME $LOCAL_Cell_TEMPPATH/renamecell.sql
+       if [ $? != 0 ]; then
+          echo "`date +"%H:%M:%S"`: ERROR1: $i times fail to rename $TABLENAME to $TABLENAMEBAK\n"
+          echo "`date +"%H:%M:%S"`: ERROR1: $i times fail to rename $TABLENAME to $TABLENAMEBAK\n" >>$LOGNE
+       else
+         break;
+       fi
+       sleep 30
+       i=$((i+1))
+       if [ "$i" -eq 4 ]; then 
+          echo "`date +"%H:%M:%S"`: ERROR1: fail to rename the table $TABLENAME to $TABLENAMEBAK\n" 
+          echo "`date +"%H:%M:%S"`: ERROR1: fail to rename the table $TABLENAME to $TABLENAMEBAK\n" >>$LOGNE
+          exit  1 
+       fi
+    done 
+
+    if [ -f $LOCAL_Cell_TEMPPATH/renamecell.sql ]; then
+       rm $LOCAL_Cell_TEMPPATH/renamecell.sql
+    fi
+    echo "rename table $TMPTABLENAME to $TABLENAME;" > $LOCAL_Cell_TEMPPATH/renamecell.sql
+
+    i=1
+    while [ "$i" -le 5 ];
+    do
+       dbaccess $IIPDBNAME $LOCAL_Cell_TEMPPATH/renamecell.sql
+       if [ $? != 0 ]; then
+          echo "`date +"%H:%M:%S"`: ERROR1: $i times fail to rename $TMPTABLENAME to $TABLENAME\n"
+          echo "`date +"%H:%M:%S"`: ERROR1: $i times fail to rename $TMPTABLENAME to $TABLENAME\n" >>$LOGNE
+       else
+         break;
+       fi
+       sleep 30
+       i=$((i+1))
+       if [ "$i" -eq 4 ]; then
+          echo "`date +"%H:%M:%S"`: ERROR1: fail to rename the table $TMPTABLENAME to $TABLENAME\n"
+          echo "`date +"%H:%M:%S"`: ERROR1: fail to rename the table $TMPTABLENAME to $TABLENAME\n" >>$LOGNE
+ 
+          if [ -f $LOCAL_Cell_TEMPPATH/renamecell.sql ]; then
+             rm $LOCAL_Cell_TEMPPATH/renamecell.sql
+          fi
+          echo "rename table $TABLENAMEBAK to $TABLENAME;" > $LOCAL_Cell_TEMPPATH/renamecell.sql
+          dbaccess $IIPDBNAME $LOCAL_Cell_TEMPPATH/renamecell.sql
+          echo "`date +"%H:%M:%S"`: ERROR1: rename the table $TABLENAMEBAK to $TABLENAME\n" >>$LOGNE
+          exit  1
+       fi
+    done 
+}
+
+
+echo "Start the DB program to handle $TABLENAME at `date`\n">>$LOGNE
+echo "Start the DB program to handle $TABLENAME at `date`\n"
+
+if [ -f $LOCAL_Cell_TEMPPATH/loadcell`date +"%Y%m%d"`.unl ]; then
+   rm $LOCAL_Cell_TEMPPATH/loadcell`date +"%Y%m%d"`.unl
+fi
+cat $FILE > $LOCAL_Cell_TEMPPATH/loadcell`date +"%Y%m%d"`.unl
+printf "`date +"%H:%M:%S"`: INFO1: Ebupt process unloadcell\n" >> $LOGNE
+
+if [ -f $LOCAL_Cell_TEMPPATH/unloadcell.sql ]; then
+   rm $LOCAL_Cell_TEMPPATH/unloadcell.sql
+fi
+
+if [ -f $LOCAL_Cell_TEMPPATH/old_$TABLENAME.unl ]; then
+   rm $LOCAL_Cell_TEMPPATH/old_$TABLENAME.unl
+fi
+
+echo "unload to $LOCAL_Cell_TEMPPATH/old_$TABLENAME.unl select * from $TABLENAME;">$LOCAL_Cell_TEMPPATH/unloadcell.sql
+dbaccess $IIPDBNAME $LOCAL_Cell_TEMPPATH/unloadcell.sql  1>>$LOGNE 2>&1
+if [ $? != 0 ]; then
+   echo "`date +"%H:%M:%S"`: ERROR1: fail to unload to $LOCAL_Cell_TEMPPATH/old_$TABLENAME.unl\n"
+   echo "`date +"%H:%M:%S"`: ERROR1: fail to unload the file from $TABLENAME\n">>$LOGNE
+   exit 1 
+fi
+rm $LOCAL_Cell_TEMPPATH/unloadcell.sql
+
+echo "unload to $LOCAL_Cell_TEMPPATH/old_$TABLENAME.unl select * from $TABLENAME\n"
+echo "unload to $LOCAL_Cell_TEMPPATH/old_$TABLENAME.unl select * from $TABLENAME\n">>$LOGNE
+if [ -f $LOCAL_Cell_TEMPPATH/old_$TABLENAME.unl ]; then
+   echo "`date +"%H:%M:%S"`: INFO1: unload the file form $TABLENAME\n">>$LOGNE
+else
+   echo "`date +"%H:%M:%S"`: ERROR1: fail to unload the file from $TABLENAME\n">>$LOGNE
+   exit 1 
+fi
+
+oldcount=`wc -l $LOCAL_Cell_TEMPPATH/old_$TABLENAME.unl | awk '{print $1}'`
+newcount=`wc -l $LOCAL_Cell_TEMPPATH/loadcell$DATE.unl | awk '{print $1}'`
+echo "`date +"%H:%M:%S"`: INFO1: oldcount is $oldcount\n" >> $LOGNE
+echo "`date +"%H:%M:%S"`: INFO1: newcount is $newcount\n" >> $LOGNE
+
+if [ "$oldcount" -le "$newcount" ]; then 
+   echo "`date +"%H:%M:%S"`: INFO1: today' $TABLENAME data is larger than yesterday\n">>$LOGNE
+   echo "`date +"%H:%M:%S"`: INFO1: today' $TABLENAME data is larger than yesterday\n"
+else
+   echo "`date +"%H:%M:%S"`: WARNING: today' $TABLENAME data is less than yesterday\n">>$LOGNE
+   echo "`date +"%H:%M:%S"`: WARNING: today' $TABLENAME data is less than yesterday\n"
+fi
+
+echo "`date +"%H:%M:%S"`: INFO1: SCP start to execute updatecell\n">>$LOGNE
+echo "`date +"%H:%M:%S"`: INFO1: SCP start to execute updatecell\n"
+
+$LOCAL_Cell_BINPATH/drop_table $TABLENAME
+dbaccess $IIPDBNAME $LOCAL_Cell_DBPATH/$TMPTABLESQL  1>>$LOGNE 2>&1
+echo "database is $IIPDBNAME,and sqlfile is $LOCAL_Cell_DBPATH/$TMPTABLESQL" >> $LOGNE
+
+if [ -f $LOCAL_Cell_TEMPPATH/truncate_table.sql ];then
+   rm $LOCAL_Cell_TEMPPATH/truncate_table.sql
+fi
+>$LOCAL_Cell_TEMPPATH/truncate_table.sql
+echo "truncate table $TMPTABLENAME;" >> $LOCAL_Cell_TEMPPATH/truncate_table.sql
+echo "truncate table $TMPTABLENAME" >> $LOGNE
+dbaccess $IIPDBNAME $LOCAL_Cell_TEMPPATH/truncate_table.sql 1>>$LOGNE 2>&1
+if [ $? != 0 ]; then
+   echo "`date +"%H:%M:%S"`: ERROR1: fail to truncate table $TMPTABLENAME\n"
+   echo "`date +"%H:%M:%S"`: ERROR1: fail to truncate table $TMPTABLENAME\n" >>$LOGNE
+   exit 1 
+fi
+
+echo "`date +"%H:%M:%S"`: INFO1: SCP create table $TMPTABLENAME OK\n" >>$LOGNE
+echo "`date +"%H:%M:%S"`: INFO1: SCP create table $TMPTABLENAME OK\n" 
+
+if [ -f $LOCAL_Cell_TEMPPATH/a* ]; then
+   rm $LOCAL_Cell_TEMPPATH/a*
+fi
+
+split -l 100000 $FILE $LOCAL_Cell_TEMPPATH/a* 
+if [ $? != 0 ]; then
+   echo "`date +"%H:%M:%S"`: ERROR1: fail to split the $LOCAL_Cell_TEMPPATH/$TABLENAME\n"
+   echo "`date +"%H:%M:%S"`: ERROR1: fail to split the $LOCAL_Cell_TEMPPATH/$TABLENAME\n" >>$LOGNE
+   exit 1 
+fi
+
+ls $LOCAL_Cell_TEMPPATH/a* | $LOCAL_Cell_BINPATH/c2cell_loaddb $TMPTABLENAME
+if [ $? != 0 ]; then
+   echo "`date +"%H:%M:%S"`: ERROR1: fail to load the table $TMPTABLENAME\n"
+   echo "`date +"%H:%M:%S"`: ERROR1: fail to load $LOCAL_Cell_TEMPPATH/$TABLENAME insert into $TMPTABLENAME\n"
+   echo "`date +"%H:%M:%S"`: ERROR1: fail to load the table $TMPTABLENAME\n">>$LOGNE
+   echo "`date +"%H:%M:%S"`: ERROR1: fail to load $LOCAL_Cell_TEMPPATH/$TABLENAME insert into $TMPTABLENAME\n" >>$LOGNE
+   exit 1 
+fi
+rm $LOCAL_Cell_TEMPPATH/a*
+
+renametable 
+
+
+if [ -f $LOCAL_Cell_TEMPPATH/update_table.sql ];then
+   rm $LOCAL_Cell_TEMPPATH/update_table.sql
+fi
+>$LOCAL_Cell_TEMPPATH/update_table.sql
+echo "update statistics medium for table $TABLENAME;" >> $LOCAL_Cell_TEMPPATH/update_table.sql
+echo "update statistics medium for table $TABLENAME" >> $LOGNE
+dbaccess $IIPDBNAME $LOCAL_Cell_TEMPPATH/update_table.sql 1>>$LOGNE 2>&1
+if [ $? != 0 ]; then
+   echo "`date +"%H:%M:%S"`: ERROR1: fail to update statistics medium for table $TABLENAME\n"
+   echo "`date +"%H:%M:%S"`: ERROR1: fail to update statistics medium for table $TABLENAME\n" >>$LOGNE
+   exit 1 
+fi
+
+echo "`date +"%H:%M:%S"`: INFO1: SCP db execute updatecell OK\n">>$LOGNE
+echo "`date +"%H:%M:%S"`: INFO1: SCP db execute updatecell OK\n"
+
+if (test -d $LOCAL_Cell_BACKUPPATH/`date +"%Y%m%d"`) then 
+    echo
+else 
+    mkdir $LOCAL_Cell_BACKUPPATH/`date +"%Y%m%d"`     
+fi
+
+mv $LOCAL_Cell_TEMPPATH/$TABLENAME $LOCAL_Cell_BACKUPPATH/`date +"%Y%m%d"`/ 1>/dev/null
+mv $LOCAL_Cell_TEMPPATH/old_$TABLENAME.unl $LOCAL_Cell_BACKUPPATH/`date +"%Y%m%d"`/ 1>/dev/null
+rm $LOCAL_Cell_TEMPPATH/loadcell$DATE.unl
+
+echo "End the DB program to handle $TABLENAME at `date`\n">>$LOGNE
+echo "End the DB program to handle $TABLENAME at `date`\n"

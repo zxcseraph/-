@@ -1,0 +1,32 @@
+mytest_write_libaio_8k_18.test: (g=0): rw=write, bs=(R) 8192B-8192B, (W) 8192B-8192B, (T) 8192B-8192B, ioengine=libaio, iodepth=1
+...
+fio-2.99
+Starting 18 threads
+
+mytest_write_libaio_8k_18.test: (groupid=0, jobs=18): err= 0: pid=30054: Thu Jun 28 22:55:20 2018
+  write: IOPS=49.3k, BW=385MiB/s (404MB/s)(18.0GiB/47825msec)
+    slat (usec): min=5, max=1393, avg=38.16, stdev=32.04
+    clat (nsec): min=444, max=88419k, avg=319913.71, stdev=491437.06
+     lat (usec): min=132, max=88433, avg=358.45, stdev=491.40
+    clat percentiles (usec):
+     |  1.00th=[  161],  5.00th=[  192], 10.00th=[  206], 20.00th=[  223],
+     | 30.00th=[  235], 40.00th=[  245], 50.00th=[  258], 60.00th=[  273],
+     | 70.00th=[  293], 80.00th=[  330], 90.00th=[  424], 95.00th=[  578],
+     | 99.00th=[  971], 99.50th=[ 1401], 99.90th=[ 7177], 99.95th=[ 8979],
+     | 99.99th=[15139]
+   bw (  KiB/s): min=15408, max=33056, per=5.63%, avg=22200.63, stdev=2652.09, samples=1690
+   iops        : min= 1926, max= 4132, avg=2775.03, stdev=331.52, samples=1690
+    lat (nsec) : 500=0.01%, 750=0.01%, 1000=0.01%
+    lat (usec) : 2=0.03%, 4=0.01%, 10=0.01%, 20=0.01%, 50=0.02%
+    lat (usec) : 100=0.08%, 250=44.65%, 500=48.41%, 750=3.98%, 1000=2.01%
+    lat (msec) : 2=0.36%, 4=0.16%, 10=0.24%, 20=0.03%, 50=0.01%
+    lat (msec) : 100=0.01%
+  cpu          : usr=1.34%, sys=12.90%, ctx=2360075, majf=0, minf=27
+  IO depths    : 1=100.0%, 2=0.0%, 4=0.0%, 8=0.0%, 16=0.0%, 32=0.0%, >=64=0.0%
+     submit    : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.0%, 64=0.0%, >=64=0.0%
+     complete  : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.0%, 64=0.0%, >=64=0.0%
+     issued rwt: total=0,2359296,0, short=0,0,0, dropped=0,0,0
+     latency   : target=0, window=0, percentile=100.00%, depth=1
+
+Run status group 0 (all jobs):
+  WRITE: bw=385MiB/s (404MB/s), 385MiB/s-385MiB/s (404MB/s-404MB/s), io=18.0GiB (19.3GB), run=47825-47825msec

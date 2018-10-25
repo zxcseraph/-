@@ -1,0 +1,33 @@
+create table "informix".mcn_smslogtemp 
+  (
+    streamnumber serial not null ,
+    smsseqno char(20),
+    msgid varchar(50),
+    chargetype smallint,
+    phonenumber char(16),
+    mcnnumber char(16),
+    sendorrecenum char(24),
+    orginalnum char(24),
+    optime char(14),
+    msgresult char(2),
+    failreason char(10)
+  ) 
+   fragment by expression 
+    partition p2018030100 ((optime >= '20180301000000' 
+              ) AND (optime < '20180310000000' ) ) in userdbs, 			  
+    partition p2018031000 ((optime >= '20180310000000' 
+              ) AND (optime < '20180320000000' ) ) in userdbs,
+    partition rmd remainder in userdbs
+    extent size 64000 next size 64000 lock mode page;
+
+
+create index "informix".idx1_smslog_streamnumberft on "informix"
+    .mcn_smslogtemp (streamnumber) using btree ;
+create index "informix".idx_mcnft on "informix".mcn_smslogtemp (mcnnumber) 
+    using btree;
+create index "informix".idx_smoptimeft on "informix".mcn_smslogtemp 
+    (optime) using btree;
+create index "informix".idx_smsphoft on "informix".mcn_smslogtemp (phonenumber) 
+    using btree;
+create index "informix".idx_txwnewsmsft on "informix".mcn_smslogtemp 
+    (mcnnumber,chargetype,optime) using btree;

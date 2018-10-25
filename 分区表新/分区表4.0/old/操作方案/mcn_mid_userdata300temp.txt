@@ -1,0 +1,46 @@
+create table "ismp".mcn_mid_userdata300temp 
+  (
+    streamnumber serial not null ,
+    unumber1 char(20),
+    midnumber char(16),
+    unumber2 char(20),
+    xappid char(30),
+    xappbizid char(64),
+    areacode char(5),
+    cityid integer,
+    requestid char(20),
+    datastate char(1),
+    exptime char(14),
+    record char(1),
+    international char(1),
+    bindid char(32),
+    midgroupid char(20),
+    bindtime char(14),
+    orderid char(20),
+    lastgnumber char(16),
+    didihhct varchar(128),
+    gnflag char(2),
+    midnumbery char(16)
+  )  
+  fragment by expression 
+    partition p2018030100 ((bindtime >= '20180301000000' 
+              ) AND (bindtime < '20180310000000' ) ) in userdbs, 			  
+    partition p2018031000 ((bindtime >= '20180310000000' 
+              ) AND (bindtime < '20180320000000' ) ) in userdbs,
+    partition rmd remainder in userdbs
+    extent size 64000 next size 64000 lock mode row;
+
+
+create index "ismp".idx1_userdata300_streamnumberft on "ismp"
+    .mcn_mid_userdata300temp (streamnumber) using btree ;
+create index "ismp".idx_midudata_bindid0ft on "ismp".mcn_mid_userdata300temp 
+    (bindid) using btree  in userdbs;
+create index "ismp".idx_midudata_bindtime0ft on "ismp".mcn_mid_userdata300temp 
+    (bindtime) using btree  in userdbs;
+create index "ismp".idx_midudata_exptime0ft on "ismp".mcn_mid_userdata300temp 
+    (exptime) using btree  in userdbs;
+create index "ismp".idx_midudata_midnum0ft on "ismp".mcn_mid_userdata300temp 
+    (midnumber) using btree  in userdbs;
+create index "ismp".idx_midudata_reqid0ft on "ismp".mcn_mid_userdata300temp 
+    (requestid) using btree  in userdbs;
+

@@ -1,0 +1,28 @@
+mytest_read_psync_256k_2.test: (g=0): rw=read, bs=(R) 256KiB-256KiB, (W) 256KiB-256KiB, (T) 256KiB-256KiB, ioengine=psync, iodepth=1
+...
+fio-2.99
+Starting 2 threads
+
+mytest_read_psync_256k_2.test: (groupid=0, jobs=2): err= 0: pid=21474: Thu Jun 28 21:42:29 2018
+   read: IOPS=2630, BW=658MiB/s (690MB/s)(2048MiB/3114msec)
+    clat (usec): min=521, max=6279, avg=758.45, stdev=122.52
+     lat (usec): min=521, max=6280, avg=758.72, stdev=122.53
+    clat percentiles (usec):
+     |  1.00th=[  701],  5.00th=[  734], 10.00th=[  734], 20.00th=[  742],
+     | 30.00th=[  742], 40.00th=[  742], 50.00th=[  742], 60.00th=[  750],
+     | 70.00th=[  750], 80.00th=[  783], 90.00th=[  791], 95.00th=[  816],
+     | 99.00th=[  865], 99.50th=[  898], 99.90th=[ 1188], 99.95th=[ 1975],
+     | 99.99th=[ 6259]
+   bw (  KiB/s): min=326656, max=339968, per=49.99%, avg=336640.00, stdev=4664.54, samples=12
+   iops        : min= 1276, max= 1328, avg=1315.00, stdev=18.22, samples=12
+    lat (usec) : 750=65.82%, 1000=33.98%
+    lat (msec) : 2=0.15%, 10=0.05%
+  cpu          : usr=0.32%, sys=5.75%, ctx=8278, majf=0, minf=142
+  IO depths    : 1=100.0%, 2=0.0%, 4=0.0%, 8=0.0%, 16=0.0%, 32=0.0%, >=64=0.0%
+     submit    : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.0%, 64=0.0%, >=64=0.0%
+     complete  : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.0%, 64=0.0%, >=64=0.0%
+     issued rwt: total=8192,0,0, short=0,0,0, dropped=0,0,0
+     latency   : target=0, window=0, percentile=100.00%, depth=1
+
+Run status group 0 (all jobs):
+   READ: bw=658MiB/s (690MB/s), 658MiB/s-658MiB/s (690MB/s-690MB/s), io=2048MiB (2147MB), run=3114-3114msec

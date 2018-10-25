@@ -1,0 +1,40 @@
+
+--定义日历模板
+insert into calendarpatterns values('cp_hour','{1 on},hour');
+--定义日历
+insert into calendartable(c_name,c_calendar) values
+('c_hour','startdate(2009-01-01 00:00:00.00000),pattstart(2009-01-01 00:00:00.00000),pattname(cp_hour)');
+--定义时间序列
+create row type meter_type
+(
+tv datetime year to fraction(5),
+kwh float,
+voltage float,
+current float
+);
+--创建时间序列表
+create table meter_table
+(
+meter_id integer,
+meter_data timeseries(meter_type)
+);
+--创建容器
+execute procedure tscontainercreate('cn01','userdbs','meter_type',1024000,102400);
+--创建容器池
+execute procedure tscontainersetpool('cn01','cnpool');
+--初始化数据
+insert into meter_table values
+(
+'1000',"calendar(ts_1hour),origin(2015-01-01 00:00:00.00000),threshold(0),container(cn01),regular"
+)
+
+--同义词
+create synonym t_hdr37from36 for zxc@group36:thdr36
+
+--定义单一视图
+create view view_b
+as select b from b
+--定义复杂视图
+create view view_a_aa
+as select a.id,b.lie2 from a a,aa b
+where a.id=b.lie1

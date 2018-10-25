@@ -1,0 +1,28 @@
+#
+#  Copyright(C) 2000 EASTCOM-BUPT Inc.
+#
+#  Filename            : $RCSfile: drop_table,v $
+#  Last Revision       : $Revision: 1.1 $
+#  Last Revision Date  : $Date: 2012/07/19 08:36:01 $
+#  Description         :
+#
+#!/bin/sh
+IIPDBNAME=newmin@scp61
+LOCALPATH=$HOME/closecell
+LOCAL_Cell_TEMPPATH=$LOCALPATH/tmp
+LOGNE=$LOCALPATH/log/dbcell.log
+TMPTABLENAME=tmp_$1
+TMPTABLENAMEBAK=tmp_$1_bak
+TABLENAMEBAK=$1_bak
+
+
+if [ -f $LOCAL_Cell_TEMPPATH/droptable.sql ];then
+   rm $LOCAL_Cell_TEMPPATH/droptable.sql
+fi
+>$LOCAL_Cell_TEMPPATH/droptable.sql
+echo "drop table $TMPTABLENAME;" >> $LOCAL_Cell_TEMPPATH/droptable.sql
+echo "drop table $TMPTABLENAME" >> $LOGNE
+echo "drop table $TABLENAMEBAK;" >> $LOCAL_Cell_TEMPPATH/droptable.sql
+echo "drop table $TABLENAMEBAK" >> $LOGNE
+dbaccess $IIPDBNAME $LOCAL_Cell_TEMPPATH/droptable.sql 1>>$LOGNE 2>&1 
+

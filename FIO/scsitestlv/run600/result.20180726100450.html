@@ -1,0 +1,823 @@
+<html>
+<head>
+<title>FIO测试报告</title>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<style>
+table
+{
+border:1px solid;
+border-collapse:collapse;
+}
+table tr,td
+{
+border:1px solid black;
+}
+.ji
+{
+background-color:#c7e5ff
+}
+
+.ou
+{
+background-color:#eaf5ff
+}
+table th
+{
+border:1px solid;
+border-collapse:collapse;
+}
+</style>
+</head>
+<body>
+<table>
+<tr>
+<th>测试名称</th>
+<th colspan="4">参数</th>
+<th colspan="17">结果</th>
+</tr>
+<tr>
+<th></th>
+<th>rw</th>
+<th>测试方式</th>
+<th>bs大小</th>
+<th>jobs数量</th>
+<th>IOPS</th>
+<th>BW</th>
+<th>slat单位</th>
+<th>slat_min</th>
+<th>slat_max</th>
+<th>slat_avg</th>
+<th>slat_sthev</th>
+<th>clat单位</th>
+<th>clat_min</th>
+<th>clat_max</th>
+<th>clat_avg</th>
+<th>clat_sthev</th>
+<th>lat单位</th>
+<th>lat_min</th>
+<th>lat_max</th>
+<th>lat_avg</th>
+<th>lat_sthev</th>
+</tr>
+<tr>
+<th>randwrite_libaio_2k_final</th>
+<td class="ou">randwrite</td>
+<td class="ou">libaio</td>
+<td class="ou">2k</td>
+<td class="ou">53</td>
+<td class="ou">1517</td>
+<td class="ou">3035</td>
+<td class="ou">usec</td>
+<td class="ou">2</td>
+<td class="ou">789</td>
+<td class="ou">14.97</td>
+<td class="ou">24.39</td>
+<td class="ou">usec</td>
+<td class="ou">469</td>
+<td class="ou">526363</td>
+<td class="ou">34911.49</td>
+<td class="ou">42591.34</td>
+<td class="ou">usec</td>
+<td class="ou">480</td>
+<td class="ou">526379</td>
+<td class="ou">34926.79</td>
+<td class="ou">42589.82</td>
+</tr>
+<tr>
+<th>randwrite_libaio_8k_final</th>
+<td class="ji">randwrite</td>
+<td class="ji">libaio</td>
+<td class="ji">8k</td>
+<td class="ji">131</td>
+<td class="ji">1356</td>
+<td class="ji">10854</td>
+<td class="ji">usec</td>
+<td class="ji">4</td>
+<td class="ji">457429</td>
+<td class="ji">1909.28</td>
+<td class="ji">8041.94</td>
+<td class="ji">usec</td>
+<td class="ji">417</td>
+<td class="ji">1547.2k</td>
+<td class="ji">94622.36</td>
+<td class="ji">82647.29</td>
+<td class="ji">usec</td>
+<td class="ji">604</td>
+<td class="ji">1548.2k</td>
+<td class="ji">96532.07</td>
+<td class="ji">83428.51</td>
+</tr>
+<tr>
+<th>randwrite_psync_256k_final</th>
+<td class="ou">randwrite</td>
+<td class="ou">psync</td>
+<td class="ou">256k</td>
+<td class="ou">86</td>
+<td class="ou">389</td>
+<td class="ou">99738</td>
+<td class="ou">NULL</td>
+<td class="ou">NULL</td>
+<td class="ou">NULL</td>
+<td class="ou">NULL</td>
+<td class="ou">NULL</td>
+<td class="ou">msec</td>
+<td class="ou">5</td>
+<td class="ou">1142</td>
+<td class="ou">220.73</td>
+<td class="ou">91.98</td>
+<td class="ou">msec</td>
+<td class="ou">5</td>
+<td class="ou">1142</td>
+<td class="ou">220.75</td>
+<td class="ou">91.98</td>
+</tr>
+<tr>
+<th>randwrite_psync_1024k_final</th>
+<td class="ji">randwrite</td>
+<td class="ji">psync</td>
+<td class="ji">1024k</td>
+<td class="ji">53</td>
+<td class="ji">111</td>
+<td class="ji">114688</td>
+<td class="ji">NULL</td>
+<td class="ji">NULL</td>
+<td class="ji">NULL</td>
+<td class="ji">NULL</td>
+<td class="ji">NULL</td>
+<td class="ji">msec</td>
+<td class="ji">10</td>
+<td class="ji">730</td>
+<td class="ji">473.24</td>
+<td class="ji">34.87</td>
+<td class="ji">msec</td>
+<td class="ji">10</td>
+<td class="ji">730</td>
+<td class="ji">473.50</td>
+<td class="ji">34.87</td>
+</tr>
+<tr>
+<th>randread_libaio_2k_final</th>
+<td class="ou">randread</td>
+<td class="ou">libaio</td>
+<td class="ou">2k</td>
+<td class="ou">84</td>
+<td class="ou">44900</td>
+<td class="ou">89907</td>
+<td class="ou">nsec</td>
+<td class="ou">1914</td>
+<td class="ou">4557.7k</td>
+<td class="ou">10216.20</td>
+<td class="ou">20646.97</td>
+<td class="ou">nsec</td>
+<td class="ou">421</td>
+<td class="ou">390778k</td>
+<td class="ou">1856933.56</td>
+<td class="ou">6544104.14</td>
+<td class="ou">usec</td>
+<td class="ou">247</td>
+<td class="ou">390807</td>
+<td class="ou">1867.35</td>
+<td class="ou">6544.00</td>
+</tr>
+<tr>
+<th>randread_libaio_8k_final</th>
+<td class="ji">randread</td>
+<td class="ji">libaio</td>
+<td class="ji">8k</td>
+<td class="ji">56</td>
+<td class="ji">13900</td>
+<td class="ji">111616</td>
+<td class="ji">usec</td>
+<td class="ji">2</td>
+<td class="ji">651</td>
+<td class="ji"> 8.58</td>
+<td class="ji"> 6.05</td>
+<td class="ji">usec</td>
+<td class="ji">629</td>
+<td class="ji">300204</td>
+<td class="ji">4005.68</td>
+<td class="ji">776.51</td>
+<td class="ji">usec</td>
+<td class="ji">648</td>
+<td class="ji">300215</td>
+<td class="ji">4014.55</td>
+<td class="ji">776.27</td>
+</tr>
+<tr>
+<th>randread_psync_256k_final</th>
+<td class="ou">randread</td>
+<td class="ou">psync</td>
+<td class="ou">256k</td>
+<td class="ou">53</td>
+<td class="ou">435</td>
+<td class="ou">111616</td>
+<td class="ou">NULL</td>
+<td class="ou">NULL</td>
+<td class="ou">NULL</td>
+<td class="ou">NULL</td>
+<td class="ou">NULL</td>
+<td class="ou">msec</td>
+<td class="ou">3</td>
+<td class="ou">548</td>
+<td class="ou">121.60</td>
+<td class="ou"> 2.06</td>
+<td class="ou">msec</td>
+<td class="ou">3</td>
+<td class="ou">548</td>
+<td class="ou">121.60</td>
+<td class="ou"> 2.06</td>
+</tr>
+<tr>
+<th>randread_psync_1024k_final</th>
+<td class="ji">randread</td>
+<td class="ji">psync</td>
+<td class="ji">1024k</td>
+<td class="ji">53</td>
+<td class="ji">109</td>
+<td class="ji">111616</td>
+<td class="ji">NULL</td>
+<td class="ji">NULL</td>
+<td class="ji">NULL</td>
+<td class="ji">NULL</td>
+<td class="ji">NULL</td>
+<td class="ji">msec</td>
+<td class="ji">33</td>
+<td class="ji">743</td>
+<td class="ji">485.87</td>
+<td class="ji"> 9.30</td>
+<td class="ji">msec</td>
+<td class="ji">33</td>
+<td class="ji">743</td>
+<td class="ji">485.87</td>
+<td class="ji"> 9.30</td>
+</tr>
+<tr>
+<th rowspan="2">randrw_libaio_2k_final</th>
+<td class="ou">randrw</td>
+<td class="ou">libaio</td>
+<td class="ou">2k</td>
+<td class="ou">71</td>
+<td class="ou">1469</td>
+<td class="ou">2939</td>
+<td class="ou">usec</td>
+<td class="ou">2</td>
+<td class="ou">706</td>
+<td class="ou">10.96</td>
+<td class="ou">13.07</td>
+<td class="ou">usec</td>
+<td class="ou">3</td>
+<td class="ou">1148.1k</td>
+<td class="ou">24852.17</td>
+<td class="ou">38183.75</td>
+<td class="ou">usec</td>
+<td class="ou">266</td>
+<td class="ou">1148.1k</td>
+<td class="ou">24863.40</td>
+<td class="ou">38182.97</td>
+</tr>
+<tr>
+<td class="ji">randrw</td>
+<td class="ji">libaio</td>
+<td class="ji">2k</td>
+<td class="ji">71</td>
+<td class="ji">1471</td>
+<td class="ji">2944</td>
+<td class="ji">usec</td>
+<td class="ji">3</td>
+<td class="ji">573</td>
+<td class="ji">11.74</td>
+<td class="ji">13.18</td>
+<td class="ji">usec</td>
+<td class="ji">382</td>
+<td class="ji">439181</td>
+<td class="ji">23382.79</td>
+<td class="ji">28780.98</td>
+<td class="ji">usec</td>
+<td class="ji">444</td>
+<td class="ji">439192</td>
+<td class="ji">23394.82</td>
+<td class="ji">28779.90</td>
+</tr>
+<tr>
+<th rowspan="2">randrw_libaio_8k_final</th>
+<td class="ou">randrw</td>
+<td class="ou">libaio</td>
+<td class="ou">8k</td>
+<td class="ou">58</td>
+<td class="ou">1303</td>
+<td class="ou">10445</td>
+<td class="ou">usec</td>
+<td class="ou">3</td>
+<td class="ou">616</td>
+<td class="ou">11.30</td>
+<td class="ou">14.91</td>
+<td class="ou">usec</td>
+<td class="ou">2</td>
+<td class="ou">632809</td>
+<td class="ou">19572.05</td>
+<td class="ou">25294.43</td>
+<td class="ou">usec</td>
+<td class="ou">331</td>
+<td class="ou">632815</td>
+<td class="ou">19583.64</td>
+<td class="ou">25293.56</td>
+</tr>
+<tr>
+<td class="ji">randrw</td>
+<td class="ji">libaio</td>
+<td class="ji">8k</td>
+<td class="ji">58</td>
+<td class="ji">1304</td>
+<td class="ji">10445</td>
+<td class="ji">usec</td>
+<td class="ji">3</td>
+<td class="ji">641</td>
+<td class="ji">13.11</td>
+<td class="ji">15.89</td>
+<td class="ji">usec</td>
+<td class="ji">495</td>
+<td class="ji">395689</td>
+<td class="ji">24864.15</td>
+<td class="ji">29118.49</td>
+<td class="ji">usec</td>
+<td class="ji">504</td>
+<td class="ji">395698</td>
+<td class="ji">24877.57</td>
+<td class="ji">29117.52</td>
+</tr>
+<tr>
+<th rowspan="2">randrw_psync_256k_final</th>
+<td class="ou">randrw</td>
+<td class="ou">psync</td>
+<td class="ou">256k</td>
+<td class="ou">56</td>
+<td class="ou">235</td>
+<td class="ou">60314</td>
+<td class="ou">NULL</td>
+<td class="ou">NULL</td>
+<td class="ou">NULL</td>
+<td class="ou">NULL</td>
+<td class="ou">NULL</td>
+<td class="ou">msec</td>
+<td class="ou">7</td>
+<td class="ou">1127</td>
+<td class="ou">104.58</td>
+<td class="ou">28.44</td>
+<td class="ou">msec</td>
+<td class="ou">7</td>
+<td class="ou">1127</td>
+<td class="ou">104.58</td>
+<td class="ou">28.44</td>
+</tr>
+<tr>
+<td class="ji">randrw</td>
+<td class="ji">psync</td>
+<td class="ji">256k</td>
+<td class="ji">56</td>
+<td class="ji">235</td>
+<td class="ji">60211</td>
+<td class="ji">NULL</td>
+<td class="ji">NULL</td>
+<td class="ji">NULL</td>
+<td class="ji">NULL</td>
+<td class="ji">NULL</td>
+<td class="ji">msec</td>
+<td class="ji">4</td>
+<td class="ji">728</td>
+<td class="ji">133.35</td>
+<td class="ji">19.44</td>
+<td class="ji">msec</td>
+<td class="ji">4</td>
+<td class="ji">728</td>
+<td class="ji">133.40</td>
+<td class="ji">19.44</td>
+</tr>
+<tr>
+<th rowspan="2">randrw_psync_1024k_final</th>
+<td class="ou">randrw</td>
+<td class="ou">psync</td>
+<td class="ou">1024k</td>
+<td class="ou">53</td>
+<td class="ou">58</td>
+<td class="ou">59699</td>
+<td class="ou">NULL</td>
+<td class="ou">NULL</td>
+<td class="ou">NULL</td>
+<td class="ou">NULL</td>
+<td class="ou">NULL</td>
+<td class="ou">msec</td>
+<td class="ou">28</td>
+<td class="ou">867</td>
+<td class="ou">410.45</td>
+<td class="ou">44.07</td>
+<td class="ou">msec</td>
+<td class="ou">28</td>
+<td class="ou">867</td>
+<td class="ou">410.45</td>
+<td class="ou">44.07</td>
+</tr>
+<tr>
+<td class="ji">randrw</td>
+<td class="ji">psync</td>
+<td class="ji">1024k</td>
+<td class="ji">53</td>
+<td class="ji">58</td>
+<td class="ji">60211</td>
+<td class="ji">NULL</td>
+<td class="ji">NULL</td>
+<td class="ji">NULL</td>
+<td class="ji">NULL</td>
+<td class="ji">NULL</td>
+<td class="ji">msec</td>
+<td class="ji">139</td>
+<td class="ji">1148</td>
+<td class="ji">494.03</td>
+<td class="ji">43.73</td>
+<td class="ji">msec</td>
+<td class="ji">139</td>
+<td class="ji">1148</td>
+<td class="ji">494.29</td>
+<td class="ji">43.73</td>
+</tr>
+<tr>
+<th>read_libaio_2k_final</th>
+<td class="ou">read</td>
+<td class="ou">libaio</td>
+<td class="ou">2k</td>
+<td class="ou">87</td>
+<td class="ou">52800</td>
+<td class="ou">105472</td>
+<td class="ou">nsec</td>
+<td class="ou">1699</td>
+<td class="ou">4898.6k</td>
+<td class="ou">9573.68</td>
+<td class="ou">19898.25</td>
+<td class="ou">nsec</td>
+<td class="ou">503</td>
+<td class="ou">1001.1M</td>
+<td class="ou">1636531.04</td>
+<td class="ou">6522202.89</td>
+<td class="ou">usec</td>
+<td class="ou">243</td>
+<td class="ou">1001.1k</td>
+<td class="ou">1646.29</td>
+<td class="ou">6522.34</td>
+</tr>
+<tr>
+<th>read_libaio_8k_final</th>
+<td class="ji">read</td>
+<td class="ji">libaio</td>
+<td class="ji">8k</td>
+<td class="ji">56</td>
+<td class="ji">13900</td>
+<td class="ji">111616</td>
+<td class="ji">usec</td>
+<td class="ji">2</td>
+<td class="ji">590</td>
+<td class="ji"> 8.28</td>
+<td class="ji"> 6.17</td>
+<td class="ji">usec</td>
+<td class="ji">361</td>
+<td class="ji">1623.9k</td>
+<td class="ji">4007.99</td>
+<td class="ji">13376.32</td>
+<td class="ji">usec</td>
+<td class="ji">368</td>
+<td class="ji">1623.9k</td>
+<td class="ji">4016.52</td>
+<td class="ji">13376.45</td>
+</tr>
+<tr>
+<th>read_psync_256k_final</th>
+<td class="ou">read</td>
+<td class="ou">psync</td>
+<td class="ou">256k</td>
+<td class="ou">53</td>
+<td class="ou">435</td>
+<td class="ou">111616</td>
+<td class="ou">NULL</td>
+<td class="ou">NULL</td>
+<td class="ou">NULL</td>
+<td class="ou">NULL</td>
+<td class="ou">NULL</td>
+<td class="ou">msec</td>
+<td class="ou">3</td>
+<td class="ou">1115</td>
+<td class="ou">121.60</td>
+<td class="ou">85.39</td>
+<td class="ou">msec</td>
+<td class="ou">3</td>
+<td class="ou">1115</td>
+<td class="ou">121.60</td>
+<td class="ou">85.39</td>
+</tr>
+<tr>
+<th>read_psync_1024k_final</th>
+<td class="ji">read</td>
+<td class="ji">psync</td>
+<td class="ji">1024k</td>
+<td class="ji">53</td>
+<td class="ji">108</td>
+<td class="ji">111616</td>
+<td class="ji">NULL</td>
+<td class="ji">NULL</td>
+<td class="ji">NULL</td>
+<td class="ji">NULL</td>
+<td class="ji">NULL</td>
+<td class="ji">msec</td>
+<td class="ji">10</td>
+<td class="ji">2165</td>
+<td class="ji">486.17</td>
+<td class="ji">259.68</td>
+<td class="ji">msec</td>
+<td class="ji">10</td>
+<td class="ji">2165</td>
+<td class="ji">486.17</td>
+<td class="ji">259.68</td>
+</tr>
+<tr>
+<th>write_libaio_2k_final</th>
+<td class="ou">write</td>
+<td class="ou">libaio</td>
+<td class="ou">2k</td>
+<td class="ou">94</td>
+<td class="ou">25700</td>
+<td class="ou">51405</td>
+<td class="ou">usec</td>
+<td class="ou">2</td>
+<td class="ou">729</td>
+<td class="ou"> 8.80</td>
+<td class="ou">10.31</td>
+<td class="ou">usec</td>
+<td class="ou">411</td>
+<td class="ou">923501</td>
+<td class="ou">3645.13</td>
+<td class="ou">11046.98</td>
+<td class="ou">usec</td>
+<td class="ou">563</td>
+<td class="ou">923509</td>
+<td class="ou">3654.12</td>
+<td class="ou">11047.10</td>
+</tr>
+<tr>
+<th>write_libaio_8k_final</th>
+<td class="ji">write</td>
+<td class="ji">libaio</td>
+<td class="ji">8k</td>
+<td class="ji">71</td>
+<td class="ji">13700</td>
+<td class="ji">109568</td>
+<td class="ji">usec</td>
+<td class="ji">2</td>
+<td class="ji">717</td>
+<td class="ji">10.72</td>
+<td class="ji"> 8.22</td>
+<td class="ji">usec</td>
+<td class="ji">603</td>
+<td class="ji">751956</td>
+<td class="ji">5154.84</td>
+<td class="ji">11545.89</td>
+<td class="ji">usec</td>
+<td class="ji">765</td>
+<td class="ji">751963</td>
+<td class="ji">5165.83</td>
+<td class="ji">11546.04</td>
+</tr>
+<tr>
+<th>write_psync_256k_final</th>
+<td class="ou">write</td>
+<td class="ou">psync</td>
+<td class="ou">256k</td>
+<td class="ou">53</td>
+<td class="ou">446</td>
+<td class="ou">114688</td>
+<td class="ou">NULL</td>
+<td class="ou">NULL</td>
+<td class="ou">NULL</td>
+<td class="ou">NULL</td>
+<td class="ou">NULL</td>
+<td class="ou">msec</td>
+<td class="ou">3</td>
+<td class="ou">1148</td>
+<td class="ou">118.60</td>
+<td class="ou">82.86</td>
+<td class="ou">msec</td>
+<td class="ou">3</td>
+<td class="ou">1148</td>
+<td class="ou">118.62</td>
+<td class="ou">82.86</td>
+</tr>
+<tr>
+<th>write_psync_1024k_final</th>
+<td class="ji">write</td>
+<td class="ji">psync</td>
+<td class="ji">1024k</td>
+<td class="ji">53</td>
+<td class="ji">111</td>
+<td class="ji">114688</td>
+<td class="ji">NULL</td>
+<td class="ji">NULL</td>
+<td class="ji">NULL</td>
+<td class="ji">NULL</td>
+<td class="ji">NULL</td>
+<td class="ji">msec</td>
+<td class="ji">43</td>
+<td class="ji">2057</td>
+<td class="ji">473.22</td>
+<td class="ji">248.54</td>
+<td class="ji">msec</td>
+<td class="ji">43</td>
+<td class="ji">2057</td>
+<td class="ji">473.48</td>
+<td class="ji">248.54</td>
+</tr>
+<tr>
+<th rowspan="2">rw_libaio_2k_final</th>
+<td class="ou">rw</td>
+<td class="ou">libaio</td>
+<td class="ou">2k</td>
+<td class="ou">82</td>
+<td class="ou">16600</td>
+<td class="ou">33178</td>
+<td class="ou">usec</td>
+<td class="ou">2</td>
+<td class="ou">746</td>
+<td class="ou"> 7.23</td>
+<td class="ou"> 4.98</td>
+<td class="ou">usec</td>
+<td class="ou">2</td>
+<td class="ou">1953.4k</td>
+<td class="ou">2187.21</td>
+<td class="ou">21028.66</td>
+<td class="ou">usec</td>
+<td class="ou">265</td>
+<td class="ou">1953.4k</td>
+<td class="ou">2194.58</td>
+<td class="ou">21028.69</td>
+</tr>
+<tr>
+<td class="ji">rw</td>
+<td class="ji">libaio</td>
+<td class="ji">2k</td>
+<td class="ji">82</td>
+<td class="ji">16600</td>
+<td class="ji">33178</td>
+<td class="ji">usec</td>
+<td class="ji">2</td>
+<td class="ji">627</td>
+<td class="ji"> 8.01</td>
+<td class="ji"> 5.18</td>
+<td class="ji">usec</td>
+<td class="ji">461</td>
+<td class="ji">1954.0k</td>
+<td class="ji">2736.96</td>
+<td class="ji">20472.78</td>
+<td class="ji">usec</td>
+<td class="ji">468</td>
+<td class="ji">1954.0k</td>
+<td class="ji">2745.13</td>
+<td class="ji">20472.82</td>
+</tr>
+<tr>
+<th rowspan="2">rw_libaio_8k_final</th>
+<td class="ou">rw</td>
+<td class="ou">libaio</td>
+<td class="ou">8k</td>
+<td class="ou">83</td>
+<td class="ou">10000</td>
+<td class="ou">87654</td>
+<td class="ou">usec</td>
+<td class="ou">2</td>
+<td class="ou">449</td>
+<td class="ou"> 7.26</td>
+<td class="ou"> 3.24</td>
+<td class="ou">usec</td>
+<td class="ou">350</td>
+<td class="ou">2064.9k</td>
+<td class="ou">3525.62</td>
+<td class="ou">20979.64</td>
+<td class="ou">usec</td>
+<td class="ou">357</td>
+<td class="ou">2064.9k</td>
+<td class="ou">3533.02</td>
+<td class="ou">20979.67</td>
+</tr>
+<tr>
+<td class="ji">rw</td>
+<td class="ji">libaio</td>
+<td class="ji">8k</td>
+<td class="ji">83</td>
+<td class="ji">10000</td>
+<td class="ji">87654</td>
+<td class="ji">usec</td>
+<td class="ji">2</td>
+<td class="ji">614</td>
+<td class="ji"> 9.59</td>
+<td class="ji"> 3.62</td>
+<td class="ji">usec</td>
+<td class="ji">671</td>
+<td class="ji">2065.7k</td>
+<td class="ji">4032.41</td>
+<td class="ji">19710.47</td>
+<td class="ji">usec</td>
+<td class="ji">679</td>
+<td class="ji">2065.7k</td>
+<td class="ji">4042.15</td>
+<td class="ji">19710.50</td>
+</tr>
+<tr>
+<th rowspan="2">rw_psync_256k_final</th>
+<td class="ou">rw</td>
+<td class="ou">psync</td>
+<td class="ou">256k</td>
+<td class="ou">54</td>
+<td class="ou">236</td>
+<td class="ou">60518</td>
+<td class="ou">NULL</td>
+<td class="ou">NULL</td>
+<td class="ou">NULL</td>
+<td class="ou">NULL</td>
+<td class="ou">NULL</td>
+<td class="ou">msec</td>
+<td class="ou">3</td>
+<td class="ou">764</td>
+<td class="ou">98.04</td>
+<td class="ou">19.46</td>
+<td class="ou">msec</td>
+<td class="ou">3</td>
+<td class="ou">764</td>
+<td class="ou">98.04</td>
+<td class="ou">19.46</td>
+</tr>
+<tr>
+<td class="ji">rw</td>
+<td class="ji">psync</td>
+<td class="ji">256k</td>
+<td class="ji">54</td>
+<td class="ji">236</td>
+<td class="ji">60518</td>
+<td class="ji">NULL</td>
+<td class="ji">NULL</td>
+<td class="ji">NULL</td>
+<td class="ji">NULL</td>
+<td class="ji">NULL</td>
+<td class="ji">msec</td>
+<td class="ji">26</td>
+<td class="ji">874</td>
+<td class="ji">130.22</td>
+<td class="ji">17.77</td>
+<td class="ji">msec</td>
+<td class="ji">26</td>
+<td class="ji">874</td>
+<td class="ji">130.27</td>
+<td class="ji">17.77</td>
+</tr>
+<tr>
+<th rowspan="2">rw_psync_1024k_final</th>
+<td class="ou">rw</td>
+<td class="ou">psync</td>
+<td class="ou">1024k</td>
+<td class="ou">53</td>
+<td class="ou">58</td>
+<td class="ou">59904</td>
+<td class="ou">NULL</td>
+<td class="ou">NULL</td>
+<td class="ou">NULL</td>
+<td class="ou">NULL</td>
+<td class="ou">NULL</td>
+<td class="ou">msec</td>
+<td class="ou">10</td>
+<td class="ou">1747</td>
+<td class="ou">409.49</td>
+<td class="ou">56.40</td>
+<td class="ou">msec</td>
+<td class="ou">10</td>
+<td class="ou">1747</td>
+<td class="ou">409.49</td>
+<td class="ou">56.40</td>
+</tr>
+<tr>
+<td class="ji">rw</td>
+<td class="ji">psync</td>
+<td class="ji">1024k</td>
+<td class="ji">53</td>
+<td class="ji">58</td>
+<td class="ji">59392</td>
+<td class="ji">NULL</td>
+<td class="ji">NULL</td>
+<td class="ji">NULL</td>
+<td class="ji">NULL</td>
+<td class="ji">NULL</td>
+<td class="ji">msec</td>
+<td class="ji">34</td>
+<td class="ji">1672</td>
+<td class="ji">492.21</td>
+<td class="ji">53.89</td>
+<td class="ji">msec</td>
+<td class="ji">34</td>
+<td class="ji">1672</td>
+<td class="ji">492.41</td>
+<td class="ji">53.90</td>
+</tr>
+</table>
+</body></html>

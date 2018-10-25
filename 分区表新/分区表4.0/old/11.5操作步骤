@@ -1,0 +1,217 @@
+[informix@ZYC2-HDH-SCPAS-tjfx01 ~]$ dbschema -d bms -t  mcn_smslog  -ss
+
+DBSCHEMA Schema Utility       INFORMIX-SQL Version 12.10.FC8W1
+
+
+
+
+
+
+
+{ TABLE "informix".mcn_smslog row size = 183 number of columns = 11 index size = 107 }
+
+create table "informix".mcn_smslog 
+  (
+    streamnumber serial not null ,
+    smsseqno char(20),
+    msgid varchar(50),
+    chargetype smallint,
+    phonenumber char(16),
+    mcnnumber char(16),
+    sendorrecenum char(24),
+    orginalnum char(24),
+    optime char(14),
+    msgresult char(2),
+    failreason char(10),
+    primary key (streamnumber) 
+  ) extent size 4096 next size 2048 lock mode page;
+
+revoke all on "informix".mcn_smslog from "public" as "informix";
+
+
+create index "informix".idx_mcn on "informix".mcn_smslog (mcnnumber) 
+    using btree  in userdbs;
+create index "informix".idx_smoptime on "informix".mcn_smslog 
+    (optime) using btree  in userdbs;
+create index "informix".idx_smspho on "informix".mcn_smslog (phonenumber) 
+    using btree  in userdbs;
+create index "informix".idx_txwnewsms on "informix".mcn_smslog 
+    (mcnnumber,chargetype,optime) using btree  in userdbs;
+	
+	
+drop table mcn_smslog
+
+create table "informix".mcn_smslog 
+  (
+    streamnumber serial not null ,
+    smsseqno char(20),
+    msgid varchar(50),
+    chargetype smallint,
+    phonenumber char(16),
+    mcnnumber char(16),
+    sendorrecenum char(24),
+    orginalnum char(24),
+    optime char(14),
+    msgresult char(2),
+    failreason char(10)
+  ) 
+   fragment by expression 
+    partition p2018030100 ((optime >= '20180301000000' 
+              ) AND (optime < '20180310000000' ) ) in userdbs, 			  
+    partition p2018031000 ((optime >= '20180310000000' 
+              ) AND (optime < '20180320000000' ) ) in userdbs,
+    partition rmd remainder in userdbs
+    extent size 64000 next size 64000 lock mode page;
+
+
+create index "informix".idx1_smslog_streamnumberft on "informix"
+    .mcn_smslog (streamnumber) using btree ;
+create index "informix".idx_mcnft on "informix".mcn_smslog (mcnnumber) 
+    using btree;
+create index "informix".idx_smoptimeft on "informix".mcn_smslog 
+    (optime) using btree;
+create index "informix".idx_smsphoft on "informix".mcn_smslog (phonenumber) 
+    using btree;
+create index "informix".idx_txwnewsmsft on "informix".mcn_smslog 
+    (mcnnumber,chargetype,optime) using btree;
+
+
+	
+[informix@ZYC2-HDH-SCPAS-tjfx01 ~]$ oncheck -pt bms:mcn_smslog |grep frag
+                  Index 2033_3308     fragment partition userdbs in DBspace userdbs
+                  Index idx_mcn        fragment partition userdbs in DBspace userdbs
+                  Index idx_smoptime  fragment partition userdbs in DBspace userdbs
+                  Index idx_smspho    fragment partition userdbs in DBspace userdbs
+                  Index idx_txwnewsms  fragment partition userdbs in DBspace userdbs
+				  
+
+select * from sysptprof where tabname in 
+('2033_3308',     
+ 'idx_mcn',       
+ 'idx_smoptime',  
+ 'idx_smspho',    
+ 'idx_txwnewsms') 
+
+
+				  
+改造点：
+1、分区
+2、extent size
+3、索引
+4、给分区表改表结构怎么办？
+	
+select count(*) from mcn_smslog
+164249246
+select max(optime) from mcn_smslog 
+20180521084057
+select min(optime) from mcn_smslog 
+20180420000000
+
+
+create table tlm_table 
+  (
+    table_name varchar(30) not null ,
+    column_fragment varchar(30),
+    time_granularity integer,
+    prefix_fragment varchar(10),
+    dbs_name varchar(30) default 'userdbs',
+    retention_num integer 
+        default -1,
+    retention_days integer 
+        default -1,
+    bak_tabname varchar(30) 
+        default 'none',
+    last_date datetime year to second,
+    failures integer 
+        default 0,
+	bak_retention_num integer default -1,
+	bak_retention_days integer default -1,
+    primary key (table_name) 
+  );
+  如需要配置备份机制
+insert into tlm_table(table_name,column_fragment,time_granularity,dbs_name,retention_days,bak_tabname,bak_retention_days)
+values('mcn_smslog','optime',240,'userdbs',30,'mcn_smslog_old',180);
+
+
+
+  
+create table tlm_errlog 
+  (
+    procname varchar(30),
+    tabname varchar(30),
+    proc_ext datetime year to second,
+    sql_err integer,
+    isam_err integer,
+    err_txt varchar(200),
+    count_exec integer
+  );
+  
+
+  
+  create table fragtabinfo
+  (
+   optime datetime year to second,
+   tabname varchar(50),
+   partition varchar(50),
+   begintime varchar(20),
+   endtime varchar(20)
+  );
+create unique index tabpar on fragtabinfo(tabname,partition);
+
+insert into fragtabinfo values(current year to second,'mcn_smslog','p2018030100','20180301000000','20180310000000');
+insert into fragtabinfo values(current year to second,'mcn_smslog','p2018031000','20180310000000','20180320000000');
+
+
+
+
+1、修改serail为int；
+2、修改mcn_smslog为mcn_smslog_old
+3、增加固定分区：partition p2000010100 ((optime >= '20000101000000' 
+              ) AND (optime < '20000110000000' ) ) in userdbs,
+4、修改索引名称：idx_mcnft_old和mcn_smslog_old
+create index "informix".idx_mcnft_old on "informix".mcn_smslog_old (mcnnumber) 
+    using btree;
+		  
+create table "informix".mcn_smslog_old 
+  (
+    streamnumber int ,
+    smsseqno char(20),
+    msgid varchar(50),
+    chargetype smallint,
+    phonenumber char(16),
+    mcnnumber char(16),
+    sendorrecenum char(24),
+    orginalnum char(24),
+    optime char(14),
+    msgresult char(2),
+    failreason char(10)
+  ) 
+   fragment by expression 
+    partition p2000010100 ((optime >= '20000101000000' 
+              ) AND (optime < '20000110000000' ) ) in userdbs, 			  
+    partition rmd remainder in userdbs
+    extent size 64000 next size 64000 lock mode page;
+
+
+create index "informix".idx1_smslog_streamnumberft_old on "informix"
+    .mcn_smslog_old (streamnumber) using btree ;
+create index "informix".idx_mcnft_old on "informix".mcn_smslog_old (mcnnumber) 
+    using btree;
+create index "informix".idx_smoptimeft_old on "informix".mcn_smslog_old 
+    (optime) using btree;
+create index "informix".idx_smsphoft_old on "informix".mcn_smslog_old (phonenumber) 
+    using btree;
+create index "informix".idx_txwnewsmsft_old on "informix".mcn_smslog_old 
+    (mcnnumber,chargetype,optime) using btree;
+	
+insert into fragtabinfo values(current year to second,'mcn_smslog_old','p2000010100','20000101000000','20000110000000');
+
+
+
+dbschema -d bms -t  mcn_smslog -ss
+dbschema -d bms -t  mcn_smslog_old  -ss
+
+oncheck -pt bms:mcn_smslog|grep frag
+oncheck -pt bms:mcn_smslog_old |grep frag
+
+

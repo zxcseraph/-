@@ -1,0 +1,31 @@
+mytest_read_libaio_2k_19.test: (g=0): rw=read, bs=(R) 2048B-2048B, (W) 2048B-2048B, (T) 2048B-2048B, ioengine=libaio, iodepth=1
+...
+fio-2.99
+Starting 19 threads
+
+mytest_read_libaio_2k_19.test: (groupid=0, jobs=19): err= 0: pid=2896: Tue Jun 26 20:59:06 2018
+   read: IOPS=105k, BW=206MiB/s (216MB/s)(6178MiB/30002msec)
+    slat (usec): min=3, max=47950, avg=27.63, stdev=107.09
+    clat (nsec): min=259, max=25928k, avg=151408.19, stdev=129480.40
+     lat (usec): min=50, max=47952, avg=179.22, stdev=169.73
+    clat percentiles (usec):
+     |  1.00th=[   27],  5.00th=[   53], 10.00th=[   58], 20.00th=[   66],
+     | 30.00th=[   74], 40.00th=[   94], 50.00th=[  180], 60.00th=[  200],
+     | 70.00th=[  210], 80.00th=[  221], 90.00th=[  237], 95.00th=[  253],
+     | 99.00th=[  289], 99.50th=[  338], 99.90th=[  578], 99.95th=[ 1057],
+     | 99.99th=[ 5997]
+   bw (  KiB/s): min= 4292, max=21616, per=5.26%, avg=11095.82, stdev=4644.02, samples=1133
+   iops        : min= 2146, max=10808, avg=5547.90, stdev=2322.01, samples=1133
+    lat (nsec) : 500=0.08%, 750=0.26%, 1000=0.20%
+    lat (usec) : 2=0.12%, 4=0.01%, 10=0.03%, 20=0.14%, 50=2.78%
+    lat (usec) : 100=37.55%, 250=53.11%, 500=5.61%, 750=0.04%, 1000=0.02%
+    lat (msec) : 2=0.03%, 4=0.01%, 10=0.02%, 20=0.01%, 50=0.01%
+  cpu          : usr=1.14%, sys=17.17%, ctx=3145329, majf=0, minf=65
+  IO depths    : 1=100.0%, 2=0.0%, 4=0.0%, 8=0.0%, 16=0.0%, 32=0.0%, >=64=0.0%
+     submit    : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.0%, 64=0.0%, >=64=0.0%
+     complete  : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.0%, 64=0.0%, >=64=0.0%
+     issued rwt: total=3163209,0,0, short=0,0,0, dropped=0,0,0
+     latency   : target=0, window=0, percentile=100.00%, depth=1
+
+Run status group 0 (all jobs):
+   READ: bw=206MiB/s (216MB/s), 206MiB/s-206MiB/s (216MB/s-216MB/s), io=6178MiB (6478MB), run=30002-30002msec

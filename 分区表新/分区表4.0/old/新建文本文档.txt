@@ -1,0 +1,76 @@
+[informix@ZJHZ-MTYAS01 ~]$ dbschema -d  hsn@hdr1 -t ods_record -ss
+
+DBSCHEMA Schema Utility       INFORMIX-SQL Version 12.10.FC8W1
+
+
+
+
+
+
+
+{ TABLE "informix".ods_record row size = 48 number of columns = 11 index size = 9 }
+
+create table "informix".ods_record 
+  (
+    date_key integer,
+    fivemin_key integer,
+    calltime datetime year to second,
+    callingnumber_key integer,
+    callednumber_key integer,
+    callingattr_key integer,
+    calledattr_key integer,
+    call_result_key integer,
+    ringtime integer,
+    callduration integer,
+    islanjie integer
+  ) 
+  fragment by range(date_key) interval(1) store in(userdbs) 
+    partition p0 VALUES < 13934 in userdbs
+  extent size 16 next size 16 lock mode page;
+
+
+revoke all on "informix".ods_record from "public" as "informix";
+
+
+create index "informix".idx_odsrecord1 on "informix".ods_record 
+    (fivemin_key) using btree ;
+ 
+dw5m_record 
+[informix@ZJHZ-MTYAS01 ~]$ dbschema -d  hsn@hdr1 -t dw5m_record  -ss
+
+DBSCHEMA Schema Utility       INFORMIX-SQL Version 12.10.FC8W1
+
+
+
+
+
+
+
+{ TABLE "informix".dw5m_record row size = 40 number of columns = 10 index size = 18 }
+
+create table "informix".dw5m_record 
+  (
+    date_key integer,
+    fivemin_key integer,
+    callingnumber_key integer,
+    callednumber_key integer,
+    callingattr_key integer,
+    calledattr_key integer,
+    call_result_key integer,
+    ringtime integer,
+    callduration integer,
+    lanjietimes integer
+  ) 
+  fragment by range(date_key) interval(1) store in(userdbs) 
+    partition p0 VALUES < 13982 in userdbs
+  extent size 16 next size 16 lock mode page;
+
+
+revoke all on "informix".dw5m_record from "public" as "informix";
+
+
+create index "informix".idx_dw5mrecordf1 on "informix".dw5m_record 
+    (fivemin_key) using btree ;
+create index "informix".idx_dw5mrecordf2 on "informix".dw5m_record 
+    (callingnumber_key) using btree ;
+

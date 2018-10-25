@@ -1,0 +1,84 @@
+#
+#  Copyright(C) 2000 EASTCOM-BUPT Inc.
+#
+#  Filename            : $RCSfile: closecell_sftp,v $
+#  Last Revision       : $Revision: 1.1 $
+#  Last Revision Date  : $Date: 2012/07/19 08:36:00 $
+#  Description         :
+#
+#!/bin/sh
+LOCAL_PLACE=$HOME/closecell/bin
+LOCAL_Cell_BACKUPPATH=$HOME/closecell/backup
+LOCAL_Cell_DATAPATH=$HOME/closecell/data
+G2_G2=GSM_A-adjacent.unl
+TD_G2=GSM_RELA-gsmrelation.unl
+G2_TD=TD_A-adjacent_td.unl
+TD_TD=TD_RELA-utranrelation.unl
+LBS_LATLT=GSM_20*
+TD_LATLT=TD_20*
+current_LBS_LATLT=LBS
+current_TD_LATLT=TD_LBS
+
+
+diff_file()
+{
+aaa=`echo $TZ|sed 's/.*\(..\)/\1/'`
+aaa=`expr $aaa + 24`
+eval aaa=`echo $TZ|sed 's/..$/+$aaa/'`
+TZ=$aaa
+export TZ
+
+if (test -d $LOCAL_Cell_BACKUPPATH/`date +"%Y%m%d"`) then
+    echo "yesterday was `date +"%Y%m%d"`\n"
+    echo "start to diff today' and yesterday'data\n"
+else
+    unset TZ
+    return  
+fi
+
+cd $LOCAL_Cell_BACKUPPATH/`date +"%Y%m%d"`
+oldcount=0
+filelist=`ls $G2_G2 $TD_G2 $G2_TD $TD_TD $current_LBS_LATLT $current_TD_LATLT`
+for file in $filelist 
+do
+   tmp=`wc -l $file | awk '{print $1}'`
+   oldcount=`expr $oldcount + $tmp`
+done
+
+echo "yesterday data count is $oldcount\n"
+if [ $oldcount -eq "0" ];then
+   echo "yesterday data is 0\n"
+   unset TZ
+   return
+fi
+
+cd $LOCAL_Cell_DATAPATH 
+newcount=0
+filelist=`ls $G2_G2 $TD_G2 $G2_TD $TD_TD $current_LBS_LATLT $current_TD_LATLT`
+for file in $filelist 
+do
+   tmp=`wc -l $file | awk '{print $1}'`
+   newcount=`expr $newcount + $tmp`
+done
+unset TZ
+
+echo "today data count is $newcount"
+newscale=`echo "scale=2;$newcount/$oldcount" | bc | awk '{printf "%f" ,$1}' | awk '{print $1}`
+oldscale=0.9
+echo "newscale:$newscale, oldscale:$oldscale"
+result=`awk -v num1=$newscale -v num2=$oldscale 'BEGIN{print(num1>num2)?"1":"0"}' `
+if [ $result -eq "0" ];then
+   echo "today data is less than yesterday\n"
+fi
+
+}
+
+echo
+echo "Start test program at `date`\n"
+
+
+diff_file
+
+
+echo "End test program at `date`\n"
+

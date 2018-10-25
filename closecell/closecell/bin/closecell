@@ -1,0 +1,203 @@
+#
+#  Copyright(C) 2000 EASTCOM-BUPT Inc.
+#
+#  Filename            : $RCSfile: closecell,v $
+#  Last Revision       : $Revision: 1.2 $
+#  Last Revision Date  : $Date: 2012/07/19 08:15:15 $
+#  Description         :
+#
+#!/bin/sh
+#这是closecell主脚本，它将调用closecell_ftp脚本、C++ run程序和closecell_db脚本
+
+LOCALPATH=$HOME/closecell
+LOCAL_Cell_TEMPPATH=$LOCALPATH/tmp
+LOCAL_Cell_BINPATH=$LOCALPATH/bin
+LOCAL_Cell_DATAPATH=$LOCALPATH/data
+LOCAL_Cell_BACKUPPATH=$LOCALPATH/backup
+LOCAL_Cell_LOGPATH=$LOCALPATH/log
+Version="tianjin"
+
+
+echo
+echo "Start at `date`\n">>$LOCAL_Cell_LOGPATH/closecell.log
+echo "Start at `date`\n"
+
+echo "Start to ftp at `date`\n">>$LOCAL_Cell_LOGPATH/closecell.log
+echo "Start to ftp at `date`\n"
+
+#if [ "$Version" = "yunnan" ]; then
+#   $LOCAL_Cell_BINPATH/closecell_ftp
+#   echo "$Version"
+#   if [ $? != 0 ]; then
+#      echo "`date +"%H:%M:%S"`: ERROR1: The ftp program run error\n"
+#      echo "`date +"%H:%M:%S"`: ERROR1: The ftp program run error\n">>$LOCAL_Cell_LOGPATH/closecell.log
+#      exit 1
+#   fi
+#elif [ "$Version" = "tianjin" ]; then
+#   $LOCAL_Cell_BINPATH/closecell_sftp
+#   if [ $? != 0 ]; then
+#      echo "`date +"%H:%M:%S"`: ERROR1: The sftp program run error\n"
+#      echo "`date +"%H:%M:%S"`: ERROR1: The sftp program run error\n">>$LOCAL_Cell_LOGPATH/closecell.log
+#      exit 1
+#   fi
+#else
+#   echo "$Version is wrong.\n"
+#   echo "$Version is wrong.\n" >>$LOCAL_Cell_LOGPATH/closecell.log
+#   exit 1
+#fi
+
+echo "End to ftp at `date`\n">>$LOCAL_Cell_LOGPATH/closecell.log
+echo "End to ftp at `date`\n"
+
+cd $LOCAL_Cell_DATAPATH
+if [ "$Version" = "tianjin" ]; then
+   echo "Start to handle c2cell_tdlac at `date`\n">>$LOCAL_Cell_LOGPATH/closecell.log
+   echo "Start to handle c2cell_tdlac at `date`\n" 
+
+   if [ -f $LOCAL_Cell_TEMPPATH/c2cell_tdlac ]; then
+      rm $LOCAL_Cell_TEMPPATH/c2cell_tdlac
+   fi 
+   if [ -f $LOCAL_Cell_TEMPPATH/tmp_c2cell_tdlac ]; then
+      rm $LOCAL_Cell_TEMPPATH/tmp_c2cell_tdlac
+   fi 
+   cat TD_RELA-utranrelation.unl  GSM_RELA-gsmrelation.unl  TD_LBS >> tmp_c2cell_tdlac
+   awk 'NF>0' tmp_c2cell_tdlac | awk -F"|" '{print $1"|"}' | sort | uniq >> $LOCAL_Cell_TEMPPATH/c2cell_tdlac 
+   rm tmp_c2cell_tdlac
+#   $LOCAL_Cell_BINPATH/closecell_db_automatic c2cell_tdlac
+#   if [ $? != 0 ]; then
+#      echo "`date +"%H:%M:%S"`: ERROR1: handle c2cell_tdlac error\n"
+#      echo "`date +"%H:%M:%S"`: ERROR1: handle c2cell_tdlac error\n">>$LOCAL_Cell_LOGPATH/closecell.log
+#      exit 1
+#   fi
+
+   echo "End to handle c2cell_tdlac at `date`\n">>$LOCAL_Cell_LOGPATH/closecell.log
+   echo "End to handle c2cell_tdlac at `date`\n"
+fi
+
+echo "Start the run program at `date`\n">>$LOCAL_Cell_LOGPATH/closecell.log
+echo "Start the run program at `date`\n"
+
+cd $LOCAL_Cell_DATAPATH
+$LOCAL_Cell_BINPATH/run -f GSM_RELA-gsmrelation.unl TD_RELA-utranrelation.unl  TD_A-adjacent_td.unl GSM_A-adjacent.unl TD_LBS LBS 
+
+if [ -f $LOCAL_Cell_TEMPPATH/c2cell_closecell ]; then
+   rm $LOCAL_Cell_TEMPPATH/c2cell_closecell
+fi
+
+if [ -f $LOCAL_Cell_TEMPPATH/closecell_c2cell_closecell ]; then
+   rm $LOCAL_Cell_TEMPPATH/closecell_c2cell_closecell
+fi
+
+if [ -f $LOCAL_Cell_TEMPPATH/LBS_c2cell_closecell ]; then
+   rm $LOCAL_Cell_TEMPPATH/LBS_c2cell_closecell
+fi
+
+
+cat $LOCAL_Cell_TEMPPATH/closecellTD | awk -F"|" '{print $1"|"$2"|"$3"|"$4"|"}'| sort | uniq >> $LOCAL_Cell_TEMPPATH/closecell_c2cell_closecell 
+cat $LOCAL_Cell_TEMPPATH/closecell2D | awk -F"|" '{print $1"|"$2"|"$3"|"$4"|"}'| sort | uniq >> $LOCAL_Cell_TEMPPATH/closecell_c2cell_closecell 
+
+cat $LOCAL_Cell_TEMPPATH/closecellLBSTD | awk -F"|" '{print $1"|"$2"|"$3"|"$4"|"}'| sort | uniq >> $LOCAL_Cell_TEMPPATH/LBS_c2cell_closecell 
+cat $LOCAL_Cell_TEMPPATH/closecellLBS2D | awk -F"|" '{print $1"|"$2"|"$3"|"$4"|"}'| sort | uniq >> $LOCAL_Cell_TEMPPATH/LBS_c2cell_closecell 
+
+cat $LOCAL_Cell_TEMPPATH/closecell_c2cell_closecell $LOCAL_Cell_TEMPPATH/LBS_c2cell_closecell | awk -F"|" '{print $1"|"$2"|"$3"|"$4"|"}' | sort | uniq >> $LOCAL_Cell_TEMPPATH/c2cell_closecell
+
+closecellcount=`wc -l $LOCAL_Cell_TEMPPATH/c2cell_closecell  | awk '{print $1}'`
+if [ $closecellcount -le 0 ]; then
+   echo "ERROR1: the c2cell_closecell has 0 line"
+   echo "ERROR1: the c2cell_closecell has 0 line">>$LOCAL_Cell_LOGPATH/closecell.log
+   exit 1
+fi
+
+close_closecellcount=`wc -l $LOCAL_Cell_TEMPPATH/closecell_c2cell_closecell  | awk '{print $1}'`
+LBS_closecellcount=`wc -l $LOCAL_Cell_TEMPPATH/LBS_c2cell_closecell  | awk '{print $1}'`
+
+echo "the close_c2cell_closecell has $close_closecellcount line\n" >>$LOCAL_Cell_LOGPATH/closecell.log 
+echo "the LBS_c2cell_closecell has $LBS_closecellcount line\n" >>$LOCAL_Cell_LOGPATH/closecell.log 
+echo "the close_c2cell_closecell has $close_closecellcount line\n"
+echo "the LBS_c2cell_closecell has $LBS_closecellcount line\n"
+echo "the c2cell_closecell has $closecellcount line\n" >>$LOCAL_Cell_LOGPATH/closecell.log 
+echo "the c2cell_closecell has $closecellcount line\n"
+
+cd $LOCAL_Cell_TEMPPATH
+rm closecellTD closecell2D closecellLBSTD closecellLBS2D LBS_c2cell_closecell closecell_c2cell_closecell
+echo "End the run program at `date`\n">>$LOCAL_Cell_LOGPATH/closecell.log
+echo "End the run program at `date`\n"
+
+#if [ "$Version" == "yunnan" ]; then
+#   $LOCAL_Cell_BINPATH/closecell_db
+#elif [ "$Version" == "tianjin" ]; then
+#   $LOCAL_Cell_BINPATH/closecell_db_automatic c2cell_closecell
+#   if [ $? != 0 ]; then
+#      echo "`date +"%H:%M:%S"`: ERROR1: handle c2cell_closecell error\n"
+#      echo "`date +"%H:%M:%S"`: ERROR1: handle c2cell_closecell error\n">>$LOCAL_Cell_LOGPATH/closecell.log
+#      exit 1
+#   fi
+#else
+#   echo "$Version is wrong.\n"
+#   echo "$Version is wrong.\n" >>$LOCAL_Cell_LOGPATH/closecell.log
+#   exit 1
+#fi
+
+#cd $LOCAL_Cell_DATAPATH
+#if [ "$Version" == "tianjin" ]; then
+#   echo "Start to handle c2cell_celllbs at `date`\n">>$LOCAL_Cell_LOGPATH/closecell.log
+#   echo "Start to handle c2cell_celllbs at `date`\n"
+#
+#   if [ -f $LOCAL_Cell_TEMPPATH/c2cell_celllbs ]; then
+#      rm $LOCAL_Cell_TEMPPATH/c2cell_celllbs
+#   fi
+#   #if [ -f $LOCAL_Cell_TEMPPATH/tmp_c2cell_celllbs ]; then
+#      #rm $LOCAL_Cell_TEMPPATH/tmp_c2cell_celllbs
+#   #fi
+#   #cat TD_LBS LBS >> tmp_c2cell_celllbs
+#   #awk 'NF>0' tmp_c2cell_celllbs | awk -F"|" '{print $1"|"$2"|"$3"|"$4"|"$5"|"$6"|"$7"|"$8"|"}' | sort | uniq >> $LOCAL_Cell_TEMPPATH/c2cell_celllbs
+#   awk 'NF>0' LBS | awk -F"|" '{print $2"|"$1"|1|"$3"|"$4"|"$5"|"$6"|"$7"|"$8"|"}' | sort | uniq >> $LOCAL_Cell_TEMPPATH/c2cell_celllbs
+#   awk 'NF>0' TD_LBS | awk -F"|" '{print $2"|"$1"|2|"$3"|"$4"|"$5"|"$6"|"$7"|"$8"|"}' | sort | uniq >> $LOCAL_Cell_TEMPPATH/c2cell_celllbs
+#   #rm tmp_c2cell_celllbs
+#   $LOCAL_Cell_BINPATH/closecell_db_automatic c2cell_celllbs
+#   if [ $? != 0 ]; then
+#      echo "`date +"%H:%M:%S"`: ERROR1: handle c2cell_celllbs error\n"
+#      echo "`date +"%H:%M:%S"`: ERROR1: handle c2cell_celllbs error\n">>$LOCAL_Cell_LOGPATH/closecell.log
+#      exit 1
+#   fi
+#
+#   echo "End to handle c2cell_celllbs at `date`\n">>$LOCAL_Cell_LOGPATH/closecell.log
+#   echo "End to handle c2cell_celllbs at `date`\n"
+#fi
+
+if [ -f $LOCAL_Cell_LOGPATH/closecell.log ]; then
+   celllogcount=`wc -l $LOCAL_Cell_LOGPATH/closecell.log | awk '{print $1}'`
+   if [ celllogcount -ge 10000 ]; then
+      mv $LOCAL_Cell_LOGPATH/closecell.log $LOCAL_Cell_LOGPATH/closecell`date +"%Y%m%d%H%M"`.log
+   fi
+fi
+
+if [ "$Version" == "yunnan" ]; then
+   if [ -f $LOCAL_Cell_LOGPATH/ftp.log ]; then
+      celllogcount=`wc -l $LOCAL_Cell_LOGPATH/ftp.log | awk '{print $1}'`
+      if [ celllogcount -ge 10000 ]; then
+         mv $LOCAL_Cell_LOGPATH/ftp.log $LOCAL_Cell_LOGPATH/ftp`date +"%Y%m%d%H%M"`.log
+      fi
+   fi
+elif [ "$Version" == "tianjin" ]; then
+   if [ -f $LOCAL_Cell_LOGPATH/sftp.log ]; then
+      celllogcount=`wc -l $LOCAL_Cell_LOGPATH/sftp.log | awk '{print $1}'`
+      if [ celllogcount -ge 10000 ]; then
+         mv $LOCAL_Cell_LOGPATH/sftp.log $LOCAL_Cell_LOGPATH/sftp`date +"%Y%m%d%H%M"`.log
+      fi
+   fi
+else
+   echo "$Version is wrong.\n"
+   echo "$Version is wrong.\n" >>$LOCAL_Cell_LOGPATH/closecell.log
+   exit 1
+fi
+
+if [ -f $LOCAL_Cell_LOGPATH/dbcell.log ]; then
+   celllogcount=`wc -l $LOCAL_Cell_LOGPATH/dbcell.log | awk '{print $1}'`
+   if [ celllogcount -ge 10000 ]; then
+      mv $LOCAL_Cell_LOGPATH/dbcell.log $LOCAL_Cell_LOGPATH/dbcell`date +"%Y%m%d%H%M"`.log
+   fi
+fi
+ 
+echo "End at `date`\n">>$LOCAL_Cell_LOGPATH/closecell.log
+echo "End at `date`\n"

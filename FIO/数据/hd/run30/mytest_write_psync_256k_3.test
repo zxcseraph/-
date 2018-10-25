@@ -1,0 +1,29 @@
+mytest_write_psync_256k_3.test: (g=0): rw=write, bs=(R) 256KiB-256KiB, (W) 256KiB-256KiB, (T) 256KiB-256KiB, ioengine=psync, iodepth=1
+...
+fio-2.99
+Starting 3 threads
+
+mytest_write_psync_256k_3.test: (groupid=0, jobs=3): err= 0: pid=1402: Wed Aug  1 13:12:40 2018
+  write: IOPS=4664, BW=1166MiB/s (1223MB/s)(30.0GiB/26345msec)
+    clat (usec): min=111, max=192100, avg=622.82, stdev=1831.24
+     lat (usec): min=122, max=192117, avg=641.59, stdev=1831.17
+    clat percentiles (usec):
+     |  1.00th=[  128],  5.00th=[  133], 10.00th=[  137], 20.00th=[  141],
+     | 30.00th=[  145], 40.00th=[  147], 50.00th=[  151], 60.00th=[  155],
+     | 70.00th=[  178], 80.00th=[ 1909], 90.00th=[ 2073], 95.00th=[ 2147],
+     | 99.00th=[ 3982], 99.50th=[ 4621], 99.90th=[ 7308], 99.95th=[12256],
+     | 99.99th=[23725]
+   bw (  KiB/s): min=216064, max=906240, per=33.34%, avg=398063.82, stdev=80754.90, samples=156
+   iops        : min=  844, max= 3540, avg=1554.86, stdev=315.48, samples=156
+    lat (usec) : 250=77.77%, 500=0.35%, 750=0.04%, 1000=0.03%
+    lat (msec) : 2=7.77%, 4=13.09%, 10=0.88%, 20=0.04%, 50=0.01%
+    lat (msec) : 100=0.01%, 250=0.01%
+  cpu          : usr=3.52%, sys=5.95%, ctx=126673, majf=0, minf=9
+  IO depths    : 1=100.0%, 2=0.0%, 4=0.0%, 8=0.0%, 16=0.0%, 32=0.0%, >=64=0.0%
+     submit    : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.0%, 64=0.0%, >=64=0.0%
+     complete  : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.0%, 64=0.0%, >=64=0.0%
+     issued rwt: total=0,122880,0, short=0,0,0, dropped=0,0,0
+     latency   : target=0, window=0, percentile=100.00%, depth=1
+
+Run status group 0 (all jobs):
+  WRITE: bw=1166MiB/s (1223MB/s), 1166MiB/s-1166MiB/s (1223MB/s-1223MB/s), io=30.0GiB (32.2GB), run=26345-26345msec

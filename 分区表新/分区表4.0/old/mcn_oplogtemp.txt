@@ -1,0 +1,42 @@
+create table "informix".mcn_oplogtemp 
+  (
+    streamnumber serial not null ,
+    phonenumber char(16),
+    optype char(2),
+    optime char(14),
+    qmcnnumber char(16),
+    hmcnnumber char(16),
+    blacknumber char(16),
+    whitenumber char(16),
+    qphonenumber char(16),
+    opmanner smallint,
+    locationid char(10),
+    provinceid smallint,
+    mcnnature char(1),
+    servid char(10),
+    activityid char(20),
+    adsource char(10),
+    media char(10)
+  ) 
+  fragment by expression 
+    partition p2018030100 ((optime >= '20180301000000' 
+              ) AND (optime < '20180310000000' ) ) in userdbs, 			  
+    partition p2018031000 ((optime >= '20180310000000' 
+              ) AND (optime < '20180320000000' ) ) in userdbs,
+    partition rmd remainder in userdbs
+    extent size 64000 next size 64000 lock mode row;
+
+
+create index "informix".idx1_oplog_streamnumberft on "informix"
+    .mcn_oplogtemp (streamnumber) using btree ;
+create index "bms".idx1_oplogft on "informix".mcn_oplogtemp (optime) 
+    using btree;
+create index "informix".idx2_oplogft on "informix".mcn_oplogtemp (phonenumber,
+    opmanner,optime) using btree;
+create index "informix".idx3_oplogft on "informix".mcn_oplogtemp (phonenumber,
+    optype,optime) using btree;
+create index "informix".idx_oplog_phonenumber_locationidft on "informix"
+    .mcn_oplogtemp (phonenumber,locationid) using btree;
+    
+
+

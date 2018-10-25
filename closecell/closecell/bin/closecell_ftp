@@ -1,0 +1,199 @@
+#!/bin/sh
+#closecell_ftpÊÇ
+RCFILE=$HOME/.netrc
+REMOTE_PLACE=/home/wangwy
+LOCAL_PLACE=$HOME/closecell/bin
+LOCAL_Cell_BACKUPPATH=$HOME/closecell/backup
+LOCAL_Cell_DATAPATH=$HOME/closecell/data
+LOG_PLACE=$HOME/closecell/log
+LOGNE=$LOG_PLACE/ftp.log
+#
+IP=10.1.60.119
+FTPUSER=wangwy
+PASSWD=123456
+
+generate_getreqfile_netrc()
+{
+   if [ -f $RCFILE ]; then  
+       rm $RCFILE 
+      if [ $? != 0 ]; then
+         echo "failed in deleting the file $RCFILE" 
+         exit 1
+      fi
+   fi
+
+   touch $RCFILE 
+   echo machine $IP login $FTPUSER password $PASSWD >> $RCFILE
+   echo macdef init>> $RCFILE
+   echo bin>> $RCFILE
+   echo prompt off>> $RCFILE
+
+   echo lcd $LOCAL_Cell_DATAPATH>> $RCFILE
+   echo cd  request>> $RCFILE
+
+   echo mget LBS*>> $RCFILE
+   echo mget TD_LBS*>> $RCFILE
+   echo mget  GSM_RELA-gsmrelation.unl >> $RCFILE
+   echo mget  TD_RELA-utranrelation.unl >> $RCFILE
+   echo mget  GSM_A-adjacent.unl >> $RCFILE
+   echo mget  TD_A-adjacent_td.unl >> $RCFILE
+
+   echo mkdir `date +"%Y%m%d"`>> $RCFILE
+
+   echo rename  GSM_A-adjacent.unl `date +"%Y%m%d"`/GSM_A-adjacent.unl >>$RCFILE
+   echo rename TD_A-adjacent_td.unl `date +"%Y%m%d"`/TD_A-adjacent_td.unl >>$RCFILE
+   echo rename  GSM_RELA-gsmrelation.unl `date +"%Y%m%d"`/GSM_RELA-gsmrelation.unl >>$RCFILE
+   echo rename  TD_RELA-utranrelation.unl `date +"%Y%m%d"`/TD_RELA-utranrelation.unl >>$RCFILE
+
+   echo mdelete LBS_* >>$RCFILE
+   echo mdelete TD_LBS* >>$RCFILE
+   echo cd `date +"%Y%m%d"` >>$RCFILE
+   echo mput LBS* >>$RCFILE
+   echo mput TD_LBS* >>$RCFILE
+   echo bye>> $RCFILE
+   echo >>$RCFILE
+   chmod 0600 $RCFILE 
+}
+
+generate_backup_netrc()
+{
+   if [ -f $RCFILE ]; then
+       rm $RCFILE
+      if [ $? != 0 ]; then
+         echo "failed in deleting the file $RCFILE"
+         exit 1
+      fi
+   fi
+
+   touch $RCFILE
+   echo machine $IP login $FTPUSER password $PASSWD >> $RCFILE
+   echo macdef init>> $RCFILE
+   echo bin>> $RCFILE
+   echo prompt off>> $RCFILE
+
+   echo lcd $LOCAL_Cell_DATAPATH>> $RCFILE
+   echo cd  request/`date +"%Y%m%d"`>> $RCFILE
+
+   echo mget LBS*>> $RCFILE
+   echo mget TD_LBS*>> $RCFILE
+   echo mget  GSM_RELA-gsmrelation.unl >> $RCFILE
+   echo mget  TD_RELA-utranrelation.unl >> $RCFILE
+   echo mget  GSM_A-adjacent.unl >> $RCFILE
+   echo mget  TD_A-adjacent_td.unl >> $RCFILE
+
+   echo bye>> $RCFILE
+   echo >>$RCFILE
+   chmod 0600 $RCFILE
+}
+
+init(){
+  echo "start to init\n" >> $LOGNE 
+  if [ -f $LOCAL_Cell_DATAPATH/GSM_A-adjacent.unl ]; then
+       rm $LOCAL_Cell_DATAPATH/GSM_A-adjacent.unl
+       echo "deleting the file GSM_A-adjacent.unl"
+      if [ $? != 0 ]; then
+         echo "failed in deleting the file GSM_A-adjacent.unl"
+         exit 1
+      fi
+   fi
+
+   if [ -f $LOCAL_Cell_DATAPATH/TD_A-adjacent_td.unl ]; then
+       rm $LOCAL_Cell_DATAPATH/TD_A-adjacent_td.unl 
+       echo "deleting the file TD_A-adjacent_td.unl"
+      if [ $? != 0 ]; then
+         echo "failed in deleting the file TD_A-adjacent_td.unl"
+         exit 1
+      fi
+   fi
+
+   if [ -f $LOCAL_Cell_DATAPATH/TD_RELA-utranrelation.unl ]; then
+       rm $LOCAL_Cell_DATAPATH/TD_RELA-utranrelation.unl 
+       echo "deleting the file TD_RELA-utranrelation.unl"
+      if [ $? != 0 ]; then
+         echo "failed in deleting the file TD_RELA-utranrelation.unl"
+         exit 1
+      fi
+   fi
+
+   if [ -f $LOCAL_Cell_DATAPATH/GSM_RELA-gsmrelation.unl ]; then
+       rm $LOCAL_Cell_DATAPATH/GSM_RELA-gsmrelation.unl 
+       echo "deleting the file GSM_RELA-gsmrelation.unl" 
+      if [ $? != 0 ]; then
+         echo "failed in deleting the file GSM_RELA-gsmrelation.unl"
+         exit 1
+      fi
+   fi
+   
+   if [ -f $LOCAL_Cell_DATAPATH/LBS ]; then
+       rm $LOCAL_Cell_DATAPATH/LBS
+       echo "deleting the file LBS" 
+      if [ $? != 0 ]; then
+         echo "failed in deleting the file LBS"
+         exit 1
+      fi
+   fi
+
+   if [ -f $LOCAL_Cell_DATAPATH/TD_LBS ]; then
+       rm $LOCAL_Cell_DATAPATH/TD_LBS
+       echo "deleting the file TD_LBS"
+      if [ $? != 0 ]; then
+         echo "failed in deleting the file TD_LBS"
+         exit 1
+      fi
+   fi 
+
+}
+
+echo
+echo "Start ftp program at `date`\n">>$LOGNE
+echo "Start ftp program at `date`\n"
+
+init
+
+if [ $# != 0 ]; then
+generate_backup_netrc
+else
+generate_getreqfile_netrc 
+fi
+
+ping -w 1 -c 1 $IP >/dev/null 2>&1
+if [ $? != 0 ]; then
+   echo "`date +"%H:%M:%S"`: ERROR1: FTP IP is wrong\n"
+   echo "`date +"%H:%M:%S"`: ERROR1: FTP IP is wrong\n" >>$LOGNE
+   exit 1
+fi
+
+/usr/bin/ftp $IP 1>>$LOGNE
+
+
+if [ -f $LOCAL_Cell_DATAPATH/GSM_A-adjacent.unl -o -f $LOCAL_Cell_DATAPATH/TD_A-adjacent_td.unl -o -f $LOCAL_Cell_DATAPATH/TD_RELA-utranrelation.unl -o -f $LOCAL_Cell_DATAPATH/GSM_RELA-gsmrelation.unl ]; then
+   echo "`date +"%H:%M:%S"`: INFO1: Succeed to get the closecell file\n" >> $LOGNE
+else
+   echo "`date +"%H:%M:%S"`: ERROR1: fail to download the closecell file\n" >> $LOGNE
+  
+fi
+
+if [ -f $LOCAL_Cell_DATAPATH/LBS* -o $LOCAL_Cell_DATAPATH/TD_LBS* ]; then
+   echo "`date +"%H:%M:%S"`: INFO1: Succeed to get the LBS file\n" >> $LOGNE
+else
+   echo "`date +"%H:%M:%S"`: ERROR1: fail to download the LBS file\n" >> $LOGNE
+   
+fi
+
+
+mv   $LOCAL_Cell_DATAPATH/LBS*    $LOCAL_Cell_DATAPATH/LBS
+mv   $LOCAL_Cell_DATAPATH/TD_LBS*    $LOCAL_Cell_DATAPATH/TD_LBS
+
+if (test -d $LOCAL_Cell_BACKUPPATH/`date +"%Y%m%d"`) then
+    echo
+else
+    mkdir $LOCAL_Cell_BACKUPPATH/`date +"%Y%m%d"`
+fi
+
+cp $LOCAL_Cell_DATAPATH/*.unl   $LOCAL_Cell_BACKUPPATH/`date +"%Y%m%d"`
+cp $LOCAL_Cell_DATAPATH/LBS   $LOCAL_Cell_BACKUPPATH/`date +"%Y%m%d"`/LBS`date +"%Y%m%d"`
+cp $LOCAL_Cell_DATAPATH/TD_LBS  $LOCAL_Cell_BACKUPPATH/`date +"%Y%m%d"`/TD_LBS`date +"%Y%m%d"`
+
+
+echo "End ftp program at `date`\n"
+echo "End ftp program at `date`\n">>$LOGNE 

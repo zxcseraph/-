@@ -1,0 +1,15 @@
+1、备份
+表：TLM_table
+表：tlm_errlog
+表：fragtabinfo
+存储过程：add_par_for_date
+存储过程：add_par_for_date
+2、删除这三个表和存储过程
+3、所有分片表，挨个导出表结构给我
+4、根据表结构创建原表的temp表
+5、执行go.sh
+6、执行add和del脚本多次，到覆盖当前时间
+7、update表 tlm_table和fragtabinfo中的表名为原表
+8、rename 原表为备份表，rename temp表为原表（如果有原表相关的view、和触发器，注意一下要先备份再删除。rename
+成功后再重建）
+9、导数据，注意在第七步之前一定不能导数据，否则会出现异常

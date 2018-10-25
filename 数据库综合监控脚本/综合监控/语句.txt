@@ -1,0 +1,12 @@
+select a.tabname,a.tabid from systables a,sysfragments b
+where a.tabid=b.tabid
+group by a.tabname,a.tabid
+
+
+select c.tabname,a.partn,b.nrows 
+from sysfragments a,sysmaster:sysptnhdr b,systables c
+where a.partition="rmd"
+and a.partn=b.partnum
+and a.tabid=c.tabid
+
+

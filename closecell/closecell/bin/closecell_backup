@@ -1,0 +1,130 @@
+#!/bin/sh
+#closecell_backup是一个备用脚本，是crontab自动调用脚本失败后，手动运行的脚本
+LOCALPATH=$HOME/closecell
+LOCAL_Cell_TEMPPATH=$LOCALPATH/tmp
+LOCAL_Cell_BINPATH=$LOCALPATH/bin
+LOCAL_Cell_BACKUPPATH=$LOCALPATH/backup
+LOCAL_Cell_DATAPATH=$LOCALPATH/data
+LOCAL_Cell_LOGPATH=$LOCALPATH/log
+
+get_yesterday_date()
+{
+   aaa=`echo $TZ|sed 's/.*\(..\)/\1/'`
+   aaa=`expr $aaa + 24`
+   eval aaa=`echo $TZ|sed 's/..$/+$aaa/'`
+   TZ=$aaa
+   export TZ
+
+   if (test -d $LOCAL_Cell_BACKUPPATH/`date +"%Y%m%d"`) then
+      echo "yesterday was `date +"%Y%m%d"`\n"
+      echo "The program uses yesterday's data\n">>$LOCAL_Cell_LOGPATH/closecell.log
+      echo "The program uses yesterday's data\n"
+   else
+      echo "The program cannot find yesterday's data\n">>$LOCAL_Cell_LOGPATH/closecell.log
+      echo "The program cannot find yesterday's data\n"
+      exit 1
+   fi   
+
+   cp $LOCAL_Cell_BACKUPPATH/`date +"%Y%m%d"`/GSM_A-adjacent.unl    $LOCAL_Cell_DATAPATH
+   cp $LOCAL_Cell_BACKUPPATH/`date +"%Y%m%d"`/TD_A-adjacent_td.unl    $LOCAL_Cell_DATAPATH
+   cp $LOCAL_Cell_BACKUPPATH/`date +"%Y%m%d"`/TD_RELA-utranrelation.unl   $LOCAL_Cell_DATAPATH
+   cp $LOCAL_Cell_BACKUPPATH/`date +"%Y%m%d"`/GSM_RELA-gsmrelation.unl    $LOCAL_Cell_DATAPATH
+   cp $LOCAL_Cell_BACKUPPATH/`date +"%Y%m%d"`/LBS*    $LOCAL_Cell_DATAPATH/LBS
+   cp $LOCAL_Cell_BACKUPPATH/`date +"%Y%m%d"`/TD_LBS*   $LOCAL_Cell_DATAPATH/TD_LBS 
+
+   unset TZ
+}
+
+echo
+echo "Start at `data`\n"
+echo "Start at `data`\n">>$LOCAL_Cell_LOGPATH/closecell.log
+echo "Start to backup at `date`\n">>$LOCAL_Cell_LOGPATH/closecell.log
+echo "Start to backup at `date`\n"
+
+echo "Do you select yesterday's data or today's data?[Y(y) or T(t)]"
+echo "Y(y): yesterday"
+echo "T(t): today"
+read ANSWER
+
+while [ "$ANSWER" != "Y" -a "$ANSWER" != "y" -a "$ANSWER" != "T" -a "$ANSWER" != "t" ]
+do
+    echo "Please enter the correct character."
+    read ANSWER
+done
+
+if [ "$ANSWER" == "T" -o "$ANSWER" == "t" ]; then
+  echo "Today is `date +"%Y%m%d"`\n"
+  echo "The program uses today's data\n">>$LOCAL_Cell_LOGPATH/closecell.log
+  echo "The program uses today's data\n"
+  $LOCAL_Cell_BINPATH/closecell_ftp 1 
+else
+   get_yesterday_date
+fi
+
+echo "Start the run program at `date`\n">>$LOCAL_Cell_LOGPATH/closecell.log
+echo "Start the run program at `date`\n"
+cd $LOCAL_Cell_DATAPATH
+
+$LOCAL_Cell_BINPATH/run -f GSM_RELA-gsmrelation.unl TD_RELA-utranrelation.unl  TD_A-adjacent_td.unl GSM_A-adjacent.unl TD_LBS LBS
+
+if [ -f $LOCAL_Cell_TEMPPATH/c2cell_closecell ]; then
+   rm $LOCAL_Cell_TEMPPATH/c2cell_closecell
+fi
+
+if [ -f $LOCAL_Cell_TEMPPATH/closecell_c2cell_closecell ]; then
+   rm $LOCAL_Cell_TEMPPATH/closecell_c2cell_closecell
+fi
+
+if [ -f $LOCAL_Cell_TEMPPATH/LBS_c2cell_closecell ]; then
+   rm $LOCAL_Cell_TEMPPATH/LBS_c2cell_closecell
+fi
+
+cat $LOCAL_Cell_TEMPPATH/closecellTD | awk -F"|" '{print $1"|"$2"|"$3"|"$4"|"}'| sort | uniq >> $LOCAL_Cell_TEMPPATH/closecell_c2cell_closecell
+cat $LOCAL_Cell_TEMPPATH/closecell2D | awk -F"|" '{print $1"|"$2"|"$3"|"$4"|"}'| sort | uniq >> $LOCAL_Cell_TEMPPATH/closecell_c2cell_closecell
+cat $LOCAL_Cell_TEMPPATH/closecellLBSTD | awk -F"|" '{print $1"|"$2"|"$3"|"$4"|"}'| sort | uniq >> $LOCAL_Cell_TEMPPATH/LBS_c2cell_closecell
+cat $LOCAL_Cell_TEMPPATH/closecellLBS2D | awk -F"|" '{print $1"|"$2"|"$3"|"$4"|"}'| sort | uniq >> $LOCAL_Cell_TEMPPATH/LBS_c2cell_closecell
+cat $LOCAL_Cell_TEMPPATH/closecell_c2cell_closecell $LOCAL_Cell_TEMPPATH/LBS_c2cell_closecell | awk -F"|" '{print $1"|"$2"|"$3"|"$4"|"}' | sort | uniq >> $LOCAL_Cell_TEMPPATH/c2cell_closecell
+
+closecellcount=`wc -l $LOCAL_Cell_TEMPPATH/c2cell_closecell  | awk '{print $1}'`
+if [ $closecellcount -le 0 ]; then
+   echo "ERROR1: the c2cell_closecell has 0 line"
+   echo "ERROR1: the c2cell_closecell has 0 line">>$LOCAL_Cell_LOGPATH/closecell.log
+   exit 1
+fi
+
+close_closecellcount=`wc -l $LOCAL_Cell_TEMPPATH/closecell_c2cell_closecell  | awk '{print $1}'`
+LBS_closecellcount=`wc -l $LOCAL_Cell_TEMPPATH/LBS_c2cell_closecell  | awk '{print $1}'`
+
+echo "the close_c2cell_closecell has $close_closecellcount line\n" >>$LOCAL_Cell_LOGPATH/closecell.log
+echo "the LBS_c2cell_closecell has $LBS_closecellcount line\n" >>$LOCAL_Cell_LOGPATH/closecell.log
+echo "the close_c2cell_closecell has $close_closecellcount line\n"
+echo "the LBS_c2cell_closecell has $LBS_closecellcount line\n"
+echo "the c2cell_closecell has $closecellcount line\n" >>$LOCAL_Cell_LOGPATH/closecell.log
+echo "the c2cell_closecell has $closecellcount line\n"
+echo "End the run program at `date`\n">>$LOCAL_Cell_LOGPATH/closecell.log
+echo "End the run program at `date`\n"
+
+$LOCAL_Cell_BINPATH/closecell_db
+if [ $? != 0 ]; then
+   echo "`date +"%H:%M:%S"`: ERROR1: The db program run error\n"
+   echo "`date +"%H:%M:%S"`: ERROR1: The db program run error\n">>$LOCAL_Cell_LOGPATH/closecell.log
+   exit 1
+fi
+
+celllogcount=`wc -l $LOCAL_Cell_LOGPATH/closecell.log | awk '{print $1}'`
+if [ celllogcount -ge 10000 ]; then
+   mv $LOCAL_Cell_LOGPATH/closecell.log $LOCAL_Cell_LOGPATH/closecell`date +"%Y%m%d%H%M"`.log
+fi
+
+celllogcount=`wc -l $LOCAL_Cell_LOGPATH/ftp.log | awk '{print $1}'`
+if [ celllogcount -ge 10000 ]; then
+   mv $LOCAL_Cell_LOGPATH/ftp.log $LOCAL_Cell_LOGPATH/ftp`date +"%Y%m%d%H%M"`.log
+fi
+
+celllogcount=`wc -l $LOCAL_Cell_LOGPATH/dbcell.log | awk '{print $1}'`
+if [ celllogcount -ge 10000 ]; then
+   mv $LOCAL_Cell_LOGPATH/dbcell.log $LOCAL_Cell_LOGPATH/dbcell`date +"%Y%m%d%H%M"`.log
+fi
+
+echo "End at `date`\n">>$LOCAL_Cell_LOGPATH/closecell.log
+echo "End at `date`\n"

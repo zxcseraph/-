@@ -1,0 +1,23 @@
+sh ./gejie.sh test hdr37 getinfo
+sh ./gejie.sh test hdr37 unload
+
+
+sh ./tunload.sh
+
+echo "drop database test;"|dbaccess sysmaster;
+echo "create database test in userdbs with buffered log;"|dbaccess sysmaster;
+
+
+sh ./gejie.sh test hdr37 load
+sh ./tload.sh
+
+rm -rf test
+rm -rf test.bak
+
+echo "drop database test;"|dbaccess sysmaster;
+
+echo "create database test in userdbs with buffered log;"|dbaccess sysmaster;
+
+cp -a all test
+sh ./gejie.sh test hdr37 load
+sh ./tload.sh

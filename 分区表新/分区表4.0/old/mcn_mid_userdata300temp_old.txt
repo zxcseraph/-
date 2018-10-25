@@ -1,0 +1,44 @@
+create table "ismp".mcn_mid_userdata300temp_old 
+  (
+    streamnumber integer ,
+    unumber1 char(20),
+    midnumber char(16),
+    unumber2 char(20),
+    xappid char(30),
+    xappbizid char(64),
+    areacode char(5),
+    cityid integer,
+    requestid char(20),
+    datastate char(1),
+    exptime char(14),
+    record char(1),
+    international char(1),
+    bindid char(32),
+    midgroupid char(20),
+    bindtime char(14),
+    orderid char(20),
+    lastgnumber char(16),
+    didihhct varchar(128),
+    gnflag char(2),
+    midnumbery char(16)
+  )  
+  fragment by expression 
+    partition p2000010100 ((exptime >= '20000101000000' 
+              ) AND (exptime < '20000111000000' ) ) in userdbs, 			  
+    partition rmd remainder in userdbs
+    extent size 64000 next size 64000 lock mode row;
+
+
+create index "ismp".idx1_userdata300_streamnumberft_old on "ismp"
+    .mcn_mid_userdata300temp_old (streamnumber) using btree ;
+create index "ismp".idx_midudata_bindid0ft_old on "ismp".mcn_mid_userdata300temp_old 
+    (bindid) using btree  in userdbs;
+create index "ismp".idx_midudata_bindtime0ft_old on "ismp".mcn_mid_userdata300temp_old 
+    (bindtime) using btree  in userdbs;
+create index "ismp".idx_midudata_exptime0ft_old on "ismp".mcn_mid_userdata300temp_old 
+    (exptime) using btree  in userdbs;
+create index "ismp".idx_midudata_midnum0ft_old on "ismp".mcn_mid_userdata300temp_old 
+    (midnumber) using btree  in userdbs;
+create index "ismp".idx_midudata_reqid0ft_old on "ismp".mcn_mid_userdata300temp_old 
+    (requestid) using btree  in userdbs;
+

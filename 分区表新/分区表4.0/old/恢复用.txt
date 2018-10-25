@@ -1,0 +1,41 @@
+truncate table tlm_table;
+truncate table tlm_errlog;
+truncate table fragtabinfo;
+load from tlm_table.unl insert into tlm_table;
+load from fragtabinfo.unl insert into fragtabinfo;
+
+drop table mcn_smslogtemp;
+drop table mcn_oplogtemp;
+drop table mcn_mid_userdata300temp;
+drop table mcn_mid_pushurllogtemp;
+drop table mcn_smslogtemp_old;
+drop table mcn_oplogtemp_old;
+drop table mcn_mid_userdata300temp_old;
+drop table mcn_mid_pushurllogtemp_old;
+drop table mcn_contralogtmp_old;
+
+delete from tlm_table
+where table_name in 
+(
+"mcn_smslogtemp_old",
+"mcn_smslogtemp",
+"mcn_oplogtemp_old",
+"mcn_oplogtemp",
+"mcn_mid_userdata300temp",
+"mcn_mid_userdata300temp_old",
+"mcn_mid_pushurllogtemp_old",
+"mcn_mid_pushurllogtemp"
+);
+
+delete from fragtabinfo
+where tabname in 
+(
+"mcn_smslogtemp_old",
+"mcn_smslogtemp",
+"mcn_oplogtemp_old",
+"mcn_oplogtemp",
+"mcn_mid_userdata300temp",
+"mcn_mid_userdata300temp_old",
+"mcn_mid_pushurllogtemp_old",
+"mcn_mid_pushurllogtemp"
+)

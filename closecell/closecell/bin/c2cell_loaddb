@@ -1,0 +1,30 @@
+#
+#  Copyright(C) 2000 EASTCOM-BUPT Inc.
+#
+#  Filename            : $RCSfile: c2cell_loaddb,v $
+#  Last Revision       : $Revision: 1.1 $
+#  Last Revision Date  : $Date: 2012/07/19 08:35:59 $
+#  Description         :
+#
+#!/bin/sh
+IIPDBNAME=newmin@scp61
+LOCALPATH=$HOME/closecell
+LOCAL_Cell_TEMPPATH=$LOCALPATH/tmp
+LOGNE=$LOCALPATH/log/dbcell.log
+TMPTABLENAME=$1
+
+while read LINE
+do
+if [ -f $LOCAL_Cell_TEMPPATH/load.sql ];then
+   rm $LOCAL_Cell_TEMPPATH/load.sql
+fi
+>$LOCAL_Cell_TEMPPATH/load.sql
+echo "load from $LINE insert into $1" >> $LOCAL_Cell_TEMPPATH/load.sql
+dbaccess $IIPDBNAME $LOCAL_Cell_TEMPPATH/load.sql 1>>$LOGNE 2>&1 
+if [ $? != 0 ]; then
+   echo "`date +"%H:%M:%S"`: ERROR1: fail to insert data into $1\n"
+   echo "`date +"%H:%M:%S"`: ERROR1: fail to insert data into $1\n" >>$LOGNE
+   exit 1
+fi
+done
+

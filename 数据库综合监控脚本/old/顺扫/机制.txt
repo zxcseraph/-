@@ -1,0 +1,22 @@
+create table seqfx
+(
+timenow       text,
+lockid        integer,
+partnum       integer,
+tabname1      text,
+tabname2      text,
+dbsname       text,
+flags         integer,
+nrows         integer,
+seqscans      integer
+);
+
+insert into tables
+values(1,2,3,4,5,6,7,8);
+
+sed -i 's/.$//' b.unl;
+
+.import "a.unl" tables
+.import "b.unl" tables
+
+select b.timenow,b.lockid,b.partnum,b.tabname1,b.tabname2,b.dbsname,b.flags,b.nrows,b.seqscans-a.seqscans where a.partnum=b.partnum and a.timenow<b.timenow

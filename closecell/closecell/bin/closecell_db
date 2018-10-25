@@ -1,0 +1,122 @@
+#!/bin/sh
+#closecell_db是数据入库的脚本
+IIPDBNAME=close@dbserver1
+LOCALPATH=$HOME/closecell
+LOCAL_Cell_TEMPPATH=$LOCALPATH/tmp
+LOCAL_Cell_DATAPATH=$LOCALPATH/data
+LOCAL_Cell_BINPATH=$LOCALPATH/bin
+LOCAL_Cell_BACKUPPATH=$LOCALPATH/backup
+LOGNE=$LOCALPATH/log/dbcell.log
+FILE=$LOCAL_Cell_TEMPPATH/c2cell_closecell
+DATE=`date +"%Y%m%d"`
+
+echo "Start the DB program at `date`\n">>$LOGNE
+echo "Start the DB program at `date`\n"
+
+if [ -f $LOCAL_Cell_TEMPPATH/loadcell`date +"%Y%m%d"`.unl ]; then
+   rm $LOCAL_Cell_TEMPPATH/loadcell`date +"%Y%m%d"`.unl
+fi
+cat $FILE > $LOCAL_Cell_TEMPPATH/loadcell`date +"%Y%m%d"`.unl
+printf "`date +"%H:%M:%S"`: INFO1: Ebupt process unloadcell\n" >> $LOGNE
+
+if [ -f $LOCAL_Cell_TEMPPATH/unloadcell.sql ]; then
+   rm $LOCAL_Cell_TEMPPATH/unloadcell.sql
+fi
+
+if [ -f $LOCAL_Cell_TEMPPATH/tmpcell`date +"%Y%m%d"`.unl ]; then
+   rm $LOCAL_Cell_TEMPPATH/tmpcell`date +"%Y%m%d"`.unl
+fi
+
+echo "unload to $LOCAL_Cell_TEMPPATH/tmpcell`date +"%Y%m%d"`.unl select * from tmp_c2cell_closecell;">$LOCAL_Cell_TEMPPATH/unloadcell.sql
+dbaccess $IIPDBNAME $LOCAL_Cell_TEMPPATH/unloadcell.sql  1>>$LOGNE 2>&1
+if [ $? != 0 ]; then
+   echo "`date +"%H:%M:%S"`: ERROR1: unload to $LOCAL_Cell_TEMPPATH/tmpcell`date +"%Y%m%d"`.unl\n"
+   echo "`date +"%H:%M:%S"`: ERROR1: unload to $LOCAL_Cell_TEMPPATH/tmpcell`date +"%Y%m%d"`.unl\n" >>$LOGNE
+   exit 1
+fi
+rm $LOCAL_Cell_TEMPPATH/unloadcell.sql
+
+echo "unload to $LOCAL_Cell_TEMPPATH/tmpcell`date +"%Y%m%d"`.unl select * from tmp_c2cell_closecell\n"
+echo "unload to $LOCAL_Cell_TEMPPATH/tmpcell`date +"%Y%m%d"`.unl select * from tmp_c2cell_closecell\n">>$LOGNE
+if [ -f $LOCAL_Cell_TEMPPATH/tmpcell`date +"%Y%m%d"`.unl ]; then
+   echo "`date +"%H:%M:%S"`: INFO1: unload the file form c2cell_closecell\n">>$LOGNE
+else
+   echo "`date +"%H:%M:%S"`: ERROR1: fail to unload the file from c2cell_closecell\n">>$LOGNE
+   exit 1
+fi
+
+oldcount=`wc -l $LOCAL_Cell_TEMPPATH/tmpcell$DATE.unl | awk '{print $1}'`
+newcount=`wc -l $LOCAL_Cell_TEMPPATH/loadcell$DATE.unl | awk '{print $1}'`
+echo "`date +"%H:%M:%S"`: INFO1: oldcount is $oldcount\n" >> $LOGNE
+echo "`date +"%H:%M:%S"`: INFO1: newcount is $newcount\n" >> $LOGNE
+
+if [ "$oldcount" -le "$newcount" ]; then 
+   echo "`date +"%H:%M:%S"`: INFO1: IIP start to execute updatecell\n">>$LOGNE
+   echo "`date +"%H:%M:%S"`: INFO1: IIP start to execute updatecell\n"
+   dbaccess $IIPDBNAME $LOCAL_Cell_DATAPATH/create_tmp_c2cell_closecell.sql  1>>$LOGNE 2>&1
+   if [ $? != 0 ]; then
+       echo "`date +"%H:%M:%S"`: ERROR1: create tmp_c2cell_closecell\n"
+       echo "`date +"%H:%M:%S"`: ERROR1: create tmp_c2cell_closecell\n" >>$LOGNE
+       exit 1
+   fi
+   echo "`date +"%H:%M:%S"`: INFO1: SMP create tmp_c2cell_closecell OK\n" >>$LOGNE
+   echo "`date +"%H:%M:%S"`: INFO1: SMP create tmp_c2cell_closecell OK\n" 
+
+   if [ -f $LOCAL_Cell_TEMPPATH/a* ]; then
+        rm $LOCAL_Cell_TEMPPATH/a*
+   fi
+   split -l 100000 $FILE $LOCAL_Cell_TEMPPATH/a* 
+   if [ $? != 0 ]; then
+       echo "`date +"%H:%M:%S"`: ERROR1: split the $LOCAL_Cell_TEMPPATH/c2cell_closecell\n"
+       echo "`date +"%H:%M:%S"`: ERROR1: split the $LOCAL_Cell_TEMPPATH/c2cell_closecell\n" >>$LOGNE
+       exit 1
+   fi
+   ls $LOCAL_Cell_TEMPPATH/a* | $LOCAL_Cell_BINPATH/tmp_c2cell_closecell_loaddb
+   rm $LOCAL_Cell_TEMPPATH/a*
+
+   echo "`date +"%H:%M:%S"`: INFO1: IIP db execute updatecell OK\n">>$LOGNE
+   echo "`date +"%H:%M:%S"`: INFO1: IIP db execute updatecell OK\n"
+else
+   echo "`date +"%H:%M:%S"`: INFO1: IIP db execute updatecell fail,because today data less than yesterday\n">>$LOGNE
+   echo "`date +"%H:%M:%S"`: INFO1: IIP db execute updatecell fail,because today data less than yesterday\n"
+   dbaccess $IIPDBNAME $LOCAL_Cell_DATAPATH/create_small_c2cell_closecell.sql  1>>$LOGNE 2>&1 
+   if [ $? != 0 ]; then
+       echo "`date +"%H:%M:%S"`: ERROR1: create small_c2cell_closecell\n"
+       echo "`date +"%H:%M:%S"`: ERROR1: create small_c2cell_closecell\n" >>$LOGNE
+       exit 1
+   fi
+   echo "`date +"%H:%M:%S"`: INFO1: IIP create small_c2cell_closecell OK\n" >>$LOGNE 
+   echo "`date +"%H:%M:%S"`: INFO1: IIP create small_c2cell_closecell OK\n" 
+   if [ -f $LOCAL_Cell_TEMPPATH/a* ]; then
+        rm $LOCAL_Cell_TEMPPATH/a*
+   fi
+   split -l 100000 $FILE $LOCAL_Cell_TEMPPATH/a*
+   if [ $? != 0 ]; then
+       echo "`date +"%H:%M:%S"`: ERROR1: split the $LOCAL_Cell_TEMPPATH/c2cell_closecell\n"
+       echo "`date +"%H:%M:%S"`: ERROR1: split the $LOCAL_Cell_TEMPPATH/c2cell_closecell\n" >>$LOGNE
+       exit 1
+   fi
+   ls $LOCAL_Cell_TEMPPATH/a* | $LOCAL_Cell_BINPATH/small_c2cell_closecell_loaddb
+   if [ $? != 0 ]; then
+       echo "`date +"%H:%M:%S"`: ERROR1: load  the $LOCAL_Cell_TEMPPATH/c2cell_closecell from tmp_c2cell_closecell\n"
+       echo "`date +"%H:%M:%S"`: ERROR1: split the $LOCAL_Cell_TEMPPATH/c2cell_closecell\n" >>$LOGNE
+       exit 1
+   fi
+   rm $LOCAL_Cell_TEMPPATH/a*
+   echo "`date +"%H:%M:%S"`: INFO1: IIP db execute updatecell OK\n">>$LOGNE
+   echo "`date +"%H:%M:%S"`: INFO1: IIP db execute updatecell OK\n"
+fi
+
+if (test -d $LOCAL_Cell_BACKUPPATH/`date +"%Y%m%d"`) then 
+    echo
+else 
+    mkdir $LOCAL_Cell_BACKUPPATH/`date +"%Y%m%d"`     
+fi
+
+mv $LOCAL_Cell_TEMPPATH/c2cell_closecell $LOCAL_Cell_BACKUPPATH/`date +"%Y%m%d"`/c2cell_closecell 1>/dev/null
+mv $LOCAL_Cell_TEMPPATH/closecell_c2cell_closecell $LOCAL_Cell_BACKUPPATH/`date +"%Y%m%d"`/closecell_c2cell_closecell 1>/dev/null
+mv $LOCAL_Cell_TEMPPATH/LBS_c2cell_closecell $LOCAL_Cell_BACKUPPATH/`date +"%Y%m%d"`/LBS_c2cell_closecell 1>/dev/null
+mv $LOCAL_Cell_TEMPPATH/tmpcell`date +"%Y%m%d"`.unl $LOCAL_Cell_BACKUPPATH/`date +"%Y%m%d"` 1>/dev/null
+
+echo "End the DB program at `date`\n">>$LOGNE
+echo "End the DB program at `date`\n"

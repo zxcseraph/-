@@ -1,0 +1,343 @@
+#
+#  Copyright(C) 2000 EASTCOM-BUPT Inc.
+#
+#  Filename            : $RCSfile: closecell_sftp,v $
+#  Last Revision       : $Revision: 1.1 $
+#  Last Revision Date  : $Date: 2012/07/19 08:36:00 $
+#  Description         :
+#
+#!/bin/sh
+#closecell_sftp下载文件 
+REMOTE_PLACE=currentdata
+LOCAL_PLACE=$HOME/closecell/bin
+LOCAL_Cell_BACKUPPATH=$HOME/closecell/backup
+LOCAL_Cell_DATAPATH=$HOME/closecell/data
+LOG_PLACE=$HOME/closecell/log
+LOGNE=$LOG_PLACE/sftp.log
+IP=10.228.246.119
+G2_G2=GSM_A-adjacent.unl
+TD_G2=GSM_RELA-gsmrelation.unl
+G2_TD=TD_A-adjacent_td.unl
+TD_TD=TD_RELA-utranrelation.unl
+LBS_LATLT=GSM_20*
+TD_LATLT=TD_20*
+current_LBS_LATLT=LBS
+current_TD_LATLT=TD_LBS
+E_ARG_WRONG=3
+ndaysBefor=""
+
+init(){
+  echo "start to init\n" >> $LOGNE 
+  if [ -f $LOCAL_Cell_DATAPATH/$G2_G2 ]; then
+       rm $LOCAL_Cell_DATAPATH/$G2_G2
+       echo "deleting the file $G2_G2" >> $LOGNE 
+      if [ $? != 0 ]; then
+         echo "failed in deleting the file $G2_G2" >> $LOGNE
+         exit 1
+      fi
+   fi
+  
+   if [ -f $LOCAL_Cell_DATAPATH/$TD_G2 ]; then
+       rm $LOCAL_Cell_DATAPATH/$TD_G2
+       echo "deleting the file $TD_G2" >> $LOGNE
+      if [ $? != 0 ]; then
+         echo "failed in deleting the file $TD_G2" >> $LOGNE
+         exit 1
+      fi
+   fi
+
+   if [ -f $LOCAL_Cell_DATAPATH/$G2_TD ]; then
+       rm $LOCAL_Cell_DATAPATH/$G2_TD
+       echo "deleting the file $G2_TD" >> $LOGNE
+      if [ $? != 0 ]; then
+         echo "failed in deleting the file $G2_TD" >> $LOGNE
+         exit 1
+      fi
+   fi
+
+   if [ -f $LOCAL_Cell_DATAPATH/$TD_TD ]; then
+       rm $LOCAL_Cell_DATAPATH/$TD_TD
+       echo "deleting the file $TD_TD" >> $LOGNE
+      if [ $? != 0 ]; then
+         echo "failed in deleting the file $TD_TD" >> $LOGNE
+         exit 1
+      fi
+   fi
+
+   if [ -f $LOCAL_Cell_DATAPATH/$current_LBS_LATLT ]; then
+       rm $LOCAL_Cell_DATAPATH/$current_LBS_LATLT
+       echo "deleting the file $current_LBS_LATLT" >> $LOGNE
+      if [ $? != 0 ]; then
+         echo "failed in deleting the file $current_LBS_LATLT" >> $LOGNE
+         exit 1
+      fi
+   fi
+
+   if [ -f $LOCAL_Cell_DATAPATH/$current_TD_LATLT ]; then
+       rm $LOCAL_Cell_DATAPATH/$current_TD_LATLT
+       echo "deleting the file $current_TD_LATLT" >> $LOGNE
+      if [ $? != 0 ]; then
+         echo "failed in deleting the file $current_TD_LATLT" >> $LOGNE
+         exit 1
+      fi
+   fi
+
+}
+
+define_file(){
+if [ -f $LOCAL_Cell_DATAPATH/$G2_G2 ]; then
+   echo "`date +"%H:%M:%S"`: INFO1: Succeed to get the closecell file: $G2_G2\n" >> $LOGNE
+else
+   echo "`date +"%H:%M:%S"`: ERROR1: fail to download the file: $G2_G2\n" >> $LOGNE
+   echo "`date +"%H:%M:%S"`: ERROR1: fail to download the file: $G2_G2\n"
+   exit 1
+fi
+
+if [ -f $LOCAL_Cell_DATAPATH/$TD_G2 ]; then
+   echo "`date +"%H:%M:%S"`: INFO1: Succeed to get the closecell file: $TD_G2\n" >> $LOGNE
+else
+   echo "`date +"%H:%M:%S"`: ERROR1: fail to download the file: $TD_G2\n" >> $LOGNE
+   echo "`date +"%H:%M:%S"`: ERROR1: fail to download the file: $TD_G2\n"
+   exit 1
+fi
+
+if [ -f $LOCAL_Cell_DATAPATH/$G2_TD ]; then
+   echo "`date +"%H:%M:%S"`: INFO1: Succeed to get the closecell file: $G2_TD\n" >> $LOGNE
+else
+   echo "`date +"%H:%M:%S"`: ERROR1: fail to download the file: $G2_TD\n" >> $LOGNE
+   echo "`date +"%H:%M:%S"`: ERROR1: fail to download the file: $G2_TD\n"
+   exit 1
+fi
+
+if [ -f $LOCAL_Cell_DATAPATH/$TD_TD ]; then
+   echo "`date +"%H:%M:%S"`: INFO1: Succeed to get the closecell file: $TD_TD\n" >> $LOGNE
+else
+   echo "`date +"%H:%M:%S"`: ERROR1: fail to download the file: $TD_TD\n" >> $LOGNE
+   echo "`date +"%H:%M:%S"`: ERROR1: fail to download the file: $TD_TD\n"
+   exit 1
+fi
+
+if [ -f $LOCAL_Cell_DATAPATH/$LBS_LATLT ]; then
+   echo "`date +"%H:%M:%S"`: INFO1: Succeed to get the file: $LBS_LATLT\n" >> $LOGNE
+else
+   echo "`date +"%H:%M:%S"`: ERROR1: fail to download the file: $LBS_LATLT\n" >> $LOGNE
+   echo "`date +"%H:%M:%S"`: ERROR1: fail to download the file: $LBS_LATLT\n"
+   exit 1
+fi
+
+if [ -f $LOCAL_Cell_DATAPATH/$TD_LATLT ]; then
+   echo "`date +"%H:%M:%S"`: INFO1: Succeed to get the file: $TD_LATLT\n" >> $LOGNE
+else
+   echo "`date +"%H:%M:%S"`: ERROR1: fail to download the file: $TD_LATLT\n" >> $LOGNE
+   echo "`date +"%H:%M:%S"`: ERROR1: fail to download the file: $TD_LATLT\n"
+   exit 1
+fi
+}
+
+exit_msg() 
+{
+    [[ $# -gt 1 ]] && (echo "${0} (${1}) - ${2}")
+    exit ${1:-0}
+}
+#判断字符串是否合法日期格式。
+#parm like 20110623
+#Just $1 whether is a date string which like format '20110623'.
+isDateStr()
+{
+  [ -z "$1" ] && exit_msg $E_ARG_WRONG "emty date str."
+  [ ${#1} -ne 8 ] && exit_msg $E_ARG_WRONG "date string[$1] length must be 8 char."
+  local year=$(echo "$1"|cut -c1-4)
+  local month=$(echo "$1"|cut -c5-6)
+  local day=$(echo "$1"|cut -c7-8)
+  day=$(expr $day + 0)
+  month=$(expr $month + 0)
+  cal $month $year 2>/dev/null | grep -q "$day" 2>/dev/null || exit_msg $E_ARG_WRONG "wrong date str format."
+}
+
+#获取N天之前的日期，N必须大于0.
+#parm like:30 20110623
+getNdaysAgo()
+{
+  set -- $@
+  local thisYear=0
+  local thisMonth=0
+  local thisDay=0
+  local lastMonthMaxDay=0
+
+  #resertDay:delete the files $resertDay days ago. so the number must be  [1,30]
+  local resertDay=$1
+  #test if $resertDay is a numeric
+  expr $resertDay + 0 >/dev/null 2>&1 || exit_msg $E_ARG_WRONG "argument must be a number."
+  #test if $resertDay is NULL or grate then 0.
+  [[ "X$resertDay" = "X" || $resertDay -lt 0  ]] && exit_msg $E_ARG_WRONG "argument must be a number which must between 1 and 30."
+
+  #如果$2为空，则使用当天日期，否则使用参数。
+  if [  -z "$2" ]
+  then
+    tmpDate=$(date '+%Y%m%d')  
+  else
+    tmpDate=$2
+    isDateStr "$2"
+    [ $? -eq 0 ] || exit_msg $E_ARG_WRONG "func[isDateStr] err."
+  fi
+  
+  local thisYear=$(expr substr "${tmpDate}" 1 4)
+  local thisMonth=$(expr substr "${tmpDate}" 5 2)
+  local thisDay=$(expr substr "${tmpDate}" 7 2)
+
+  #如果当前的天数小于要计算的天数N，则月份及年份有可能要递减。
+  while [ ${thisDay} -le ${resertDay} ]
+  do
+    if [ ${thisMonth} -eq 1 ]
+    then
+      thisYear=$(expr $thisYear - 1 )
+      thisMonth=12
+    else
+      thisMonth=$(expr $thisMonth - 1)
+      #如果月份减1之后数值小于10，前面加个字符'0'
+      [ $thisMonth -lt 10 ] && thisMonth="0${thisMonth}"
+    fi
+    #通用日历cal计算上个月的最大天数
+    lastMonthMaxDay=$(echo $(cal $thisMonth $thisYear)|tail -n 1|awk '{print $NF}')
+    #${thisDay} equal last month max day add today,and its result subtract ${resertDay}
+    thisDay=$(expr ${lastMonthMaxDay} + ${thisDay})  
+  done
+
+  thisDay=$(expr $thisDay - ${resertDay})
+  #如果天数减1之后数值小于10，前面加个字符'0'
+  [ $thisDay -lt 10 ] && thisDay="0${thisDay}"
+  #echo ${thisYear}${thisMonth}${thisDay}
+  ndaysBefor="${thisYear}${thisMonth}${thisDay}"
+}
+
+diff_file()
+{
+getNdaysAgo 1
+
+if (test -d $LOCAL_Cell_BACKUPPATH/$ndaysBefor) then
+    echo "yesterday was $ndaysBefor\n"
+    echo "yesterday was $ndaysBefor\n">> $LOGNE
+    echo "start to diff today' and yesterday'data\n">> $LOGNE
+else
+    echo "yesterday has no directory $ndaysBefor\n"
+    echo "yesterday has no directory $ndaysBefor\n">> $LOGNE 
+    return  
+fi
+
+cd $LOCAL_Cell_BACKUPPATH/$ndaysBefor
+oldcount=0
+filelist=`ls $G2_G2 $TD_G2 $G2_TD $TD_TD $current_LBS_LATLT $current_TD_LATLT`
+for file in $filelist 
+do
+   tmp=`wc -l $file | awk '{print $1}'`
+   oldcount=`expr $oldcount + $tmp`
+done
+
+if [ $oldcount -eq "0" ];then
+   echo "It has directory $ndaysBefor but yesterday'data is 0\n"
+   echo "It has directory $ndaysBefor but yesterday'data is 0\n">> $LOGNE
+   return
+fi
+
+echo "yesterday's data is $oldcount\n"
+echo "yesterday's data is $oldcount\n">> $LOGNE
+
+cd $LOCAL_Cell_DATAPATH 
+newcount=0
+filelist=`ls $G2_G2 $TD_G2 $G2_TD $TD_TD $current_LBS_LATLT $current_TD_LATLT`
+for file in $filelist 
+do
+   tmp=`wc -l $file | awk '{print $1}'`
+   newcount=`expr $newcount + $tmp`
+done
+
+echo "today's data is $newcount\n"
+echo "today's data is $newcount\n">> $LOGNE
+
+newscale=`echo "scale=2;$newcount/$oldcount" | bc | awk '{printf "%f" ,$1}' | awk '{print $1}`
+oldscale=0.9
+echo "newscale:$newscale, oldscale:$oldscale">> $LOGNE
+result=`awk -v num1=$newscale -v num2=$oldscale 'BEGIN{print(num1>num2)?"1":"0"}' `
+if [ $result -eq "0" ];then
+   echo "today data is less than yesterday\n"
+   echo "today data is less than yesterday\n">> $LOGNE
+fi
+
+}
+
+rename_file()
+{
+cd $LOCAL_Cell_DATAPATH  
+filelist=` ls | grep "$LBS_LATLT" ` 
+tmp_data=0
+for file in $filelist
+do
+    file_name=`echo $file | awk -F'_' '{print $2}` 
+    file_data=`echo $file_name | awk -F'.' '{print $1}` 
+    if [ $file_data -gt $tmp_data ]; then
+       tmp_data=$file_data
+       filename=$file
+    fi
+done
+mv ${filename}  $current_LBS_LATLT
+
+if [ -f $LOCAL_Cell_DATAPATH/$LBS_LATLT ]; then
+       rm $LOCAL_Cell_DATAPATH/$LBS_LATLT
+fi
+
+filelist=` ls | grep "$TD_LATLT" `
+tmp_data=0
+for file in $filelist
+do
+    file_name=`echo ${file} | awk -F'_' '{print $2}`
+    file_data=`echo ${file_name} | awk -F'.' '{print $1}`
+    if [ ${file_data} -gt ${tmp_data} ]; then
+       tmp_data=${file_data}
+       filename=${file}
+    fi
+done
+mv ${filename}  $current_TD_LATLT
+
+if [ -f $LOCAL_Cell_DATAPATH/$TD_LATLT ]; then
+       rm $LOCAL_Cell_DATAPATH/$TD_LATLT
+fi
+}
+
+echo
+echo "Start sftp program at `date`\n">>$LOGNE
+echo "Start sftp program at `date`\n"
+
+init
+
+ping -w 1 -c 1 $IP >/dev/null 2>&1
+if [ $? != 0 ]; then
+   echo "`date +"%H:%M:%S"`: ERROR1: SFTP IP is wrong\n"
+   echo "`date +"%H:%M:%S"`: ERROR1: SFTP IP is wrong\n" >>$LOGNE
+   exit 1
+fi
+
+cd $LOCAL_PLACE
+./expect.exp
+
+define_file
+
+
+if (test -d $LOCAL_Cell_BACKUPPATH/`date +"%Y%m%d"`) then
+    echo
+else
+    mkdir $LOCAL_Cell_BACKUPPATH/`date +"%Y%m%d"`
+fi
+
+rename_file
+diff_file
+
+cp $LOCAL_Cell_DATAPATH/$G2_G2               $LOCAL_Cell_BACKUPPATH/`date +"%Y%m%d"`/
+cp $LOCAL_Cell_DATAPATH/$TD_G2               $LOCAL_Cell_BACKUPPATH/`date +"%Y%m%d"`/
+cp $LOCAL_Cell_DATAPATH/$G2_TD               $LOCAL_Cell_BACKUPPATH/`date +"%Y%m%d"`/
+cp $LOCAL_Cell_DATAPATH/$TD_TD               $LOCAL_Cell_BACKUPPATH/`date +"%Y%m%d"`/
+cp $LOCAL_Cell_DATAPATH/$current_LBS_LATLT   $LOCAL_Cell_BACKUPPATH/`date +"%Y%m%d"`/
+cp $LOCAL_Cell_DATAPATH/$current_TD_LATLT    $LOCAL_Cell_BACKUPPATH/`date +"%Y%m%d"`/
+
+
+echo "End sftp program at `date`\n"
+echo "End sftp program at `date`\n">>$LOGNE 
